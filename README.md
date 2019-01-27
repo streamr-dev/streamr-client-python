@@ -5,10 +5,9 @@
 
 By using this client, you can easily interact with the [Streamr](http://www.streamr.com) API from python environments. You can, for example, subscribe to real-time data in Streams, produce new data to Streams, and create new Streams.
 
-This library is work-in-progress
+This library is work-in-progress. Note: this library only supports Python3. 
 
-
-. Note: this library only supports Python3. ### Installation
+### Installation
 This module is test on Python 3.6+
 
 1. download
