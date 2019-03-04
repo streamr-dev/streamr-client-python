@@ -10,7 +10,6 @@ if __name__=='__main__':
     assert isinstance(result,ErrorPayload)
     assert result.error == msg['error']
 
-
     obj = ErrorPayload(msg['error']).toObject()
 
     assert obj == msg

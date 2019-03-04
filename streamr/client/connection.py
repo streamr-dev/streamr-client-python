@@ -1,15 +1,12 @@
 from streamr.client.event import Event
 from streamr.protocol.response import Response
 from streamr.protocol.request import Request
-from streamr.client.errors.error import ConnectionError
+from streamr.client.errors.error import ConnectionError, ParameterError, ConnectionFailedError, MessageError
 from streamr.client.util.websock import MyWebSocket
 import websocket
 import logging
 import websocket
 import threading
-import time
-import os
-import json
 
 
 __all___ = ['Connection']
@@ -38,33 +35,34 @@ class Connection(Event):
     """
 
     class State:
-        DISCONNECTED = 'disconnected'
-        CONNECTING = 'connecting'
-        CONNECTED = 'connected'
-        DISCONNECTING = 'disconnecting'
+        DISCONNECTED = 'DISCONNECTED'
+        CONNECTING = 'CONNECTING'
+        CONNECTED = 'CONNECTED'
+        DISCONNECTING = 'DISCONNECTING'
 
-    def __init__(self,options,socket=None):
+    def __init__(self, options, socket=None):
         super().__init__()
 
         self.retryCounter = 0
 
-        if type(options) != dict:
-            raise ConnectionError('options should be a dict')
+        if not isinstance(options, dict):
+            raise ParameterError('options should be a dict')
 
-        if options.get('url',None) == None:
-            raise ConnectionError('URL is not defined')
+        if options.get('url', None) is None:
+            raise ParameterError('URL is not defined')
 
         self.options = options
         self.state = Connection.State.DISCONNECTED
-        
-        self.socket = socket if isinstance(socket, MyWebSocket) else MyWebSocket(self.options['url'])
-        
-        def socket_open(ws):
+
+        self.socket = socket if isinstance(
+            socket, MyWebSocket) else MyWebSocket(self.options['url'])
+
+        def socketOpenCallback(ws):
             logger.debug('Connected to %s' % self.options['url'])
             self.updateState(self.State.CONNECTED)
-        self.socket.on_open = socket_open
+        self.socket.on_open = socketOpenCallback
 
-        def socket_close(ws):
+        def socketCloseCallback(ws):
             if self.state != self.State.DISCONNECTING:
                 self.retryCounter += 1
                 logger.error('Connection lost. Attempting to reconnect')
@@ -76,37 +74,39 @@ class Connection(Event):
                         'Reconnect failed for 10 times. Stop reconnecting')
             else:
                 self.updateState(self.State.DISCONNECTED)
-        self.socket.on_close = socket_close
+        self.socket.on_close = socketCloseCallback
 
-        def socket_message(ws, msg):
+        def socketMessageCallback(ws, origMsg):
             try:
-                msg = Response.deserialize(msg)
+                msg = Response.deserialize(origMsg)
+                print(msg.getMessageName())
                 self.emit(msg.getMessageName(), msg)
-                logger.debug('get %s response'%(msg.getMessageName))
-            except Exception as e:
-                self.emit('error', e)
-        self.socket.on_message = socket_message
+                logger.info('get %s response' % (msg.getMessageName()))
+            except (MessageError,Exception) as e:
+                if isinstance(e,MessageError):
+                    self.emit('error',MessageError(msg))
+                else:
+                    self.emit('error',e)
+        self.socket.on_message = socketMessageCallback
 
-        def socket_error(ws, error):
+        def socketErrorCallback(ws, error):
             self.emit('error', error)
-            import traceback
-            traceback.print_exc()
-        self.socket.on_error = socket_error
+        self.socket.on_error = socketErrorCallback
 
-        if options.get('autoConnect',False):
+        if options.get('autoConnect', False):
             self.connect()
 
-    def updateState(self,state):
+    def updateState(self, state):
         self.state = state
-        logger.debug('Connection state:%s'%(self.state))
-        print('Client state : %s'%(self.state))
+        logger.debug('Connection state:%s' % (self.state))
+        print('Client state : %s' % (self.state))
         self.emit(self.state)
 
     def connect(self):
 
         if self.retryCounter > 10:
             self.retryCounter = 0
-        
+
         if self.state == self.State.CONNECTING:
             raise ConnectionError('Already connecting')
 
@@ -114,12 +114,12 @@ class Connection(Event):
             raise ConnectionError('Already connected')
 
         self.updateState(Connection.State.CONNECTING)
-       
+
         def run():
             try:
                 self.socket.run_forever()
             except Exception as e:
-                raise Exception('websock error: %s' % e)
+                self.emit('error', e)
         thread = threading.Thread(target=run)
         thread.start()
 
@@ -132,8 +132,8 @@ class Connection(Event):
         self.updateState(self.State.DISCONNECTING)
         self.socket.close()
 
-    def send(self,request):
+    def send(self, request):
         try:
             self.socket.send(request.serialize())
         except Exception as e:
-            self.emit('error',e)
+            self.emit('error', e)

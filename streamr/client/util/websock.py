@@ -208,6 +208,7 @@ class MyWebSocket(object):
             self._callback(self.on_error, e)
             teardown()
 
+
     def _get_close_args(self, data):
         """ this functions extracts the code, reason from the close body
         if they exists, and if the self.on_close except three arguments """

@@ -2,119 +2,151 @@ import logging
 from collections import deque
 import getopt
 import sys
+from pathlib import Path
+import json
 
 from streamr.client.connection import Connection
-from streamr.protocol.payloads import *
-from streamr.protocol.request import *
-from streamr.protocol.response import *
+from streamr.client.subscription import Subscription
 from streamr.client.event import Event
 from streamr.client.client import Client
+from streamr.protocol.response import SubscribeResponse,UnsubscribeResponse,Response,BroadcastMessage,UnicastMessage
+from streamr.protocol.request import SubscribeRequest,UnsubscribeRequest,Request
 
+from tests.config import getAPIKey
 
+logging.basicConfig(level=logging.INFO, filename='mylog.log',
+                    format='%(relativeCreated)6d %(threadName)s %(levelname)s :%(message)s')
 
-def msg(streamId='stream1', offset=0, content={}, subId=None):
-    import time
-    if subId == None:
-        return UnicastMessage(StreamMessage(streamId, 0, time.time(), 0, offset, None, StreamMessage.CONTENT_TYPE.JSON, content), subId)
-    else:
-        return BroadcastMessage(StreamMessage(streamId, 0, time.time(), 0, offset, None, StreamMessage.CONTENT_TYPE.JSON, content))
+logger = logging.getLogger(__name__)
+
 
 
 def createConnectionMock():
-    
+
     c = Event()
+
     c.expectedMessagesToSend = deque([])
 
     c.state = Connection.State.DISCONNECTED
 
-    def a1():
-        logging.warning('Connection mock : connecting')
+    def connection():
+        logger.warning('Connection mock : connecting')
         c.state = Connection.State.CONNECTING
-        logging.warning('Connection mock: connected')
+        logger.warning('Connection mock: connected')
         c.state = Connection.State.CONNECTED
         c.emit('connected')
-    c.connect = a1
+    c.connect = connection
 
-    def a2():
-        print(len(c.expectedMessagesToSend))
-    c.checkSentMessage = a2
 
-    def a3():
-        logging.warning('Connection mock : disconnecting')
+    def disconnect():
+        logger.warning('Connection mock : disconnecting')
         c.state = Connection.State.DISCONNECTING
-        logging.warning('Connection mock: disconnected')
+        logger.warning('Connection mock : disconnected')
         c.state = Connection.State.DISCONNECTED
         c.emit('disconnected')
-    c.disconnect = a3
+    c.disconnect = disconnect
 
-    def a4(msg):
+    def send(msg):
         next_ = c.expectedMessagesToSend.popleft()
         assert msg == next_
-    c.send = a4
+    c.send = send
 
-    def a5(payload):
-        c.emit(payload.getMessageName(),payload)
-    c.emitMessge = a5
-
-    def a6(msg):
+    def expect(msg):
         c.expectedMessagesToSend.append(msg)
-    c.expect = a6
+    c.expect = expect
 
+    def check():
+        assert len(c.expectedMessagesToSend) == 0
+    c.check = check
 
     return c
 
 
-if __name__ == '__main__':
+def init():
 
     conn = createConnectionMock()
+    cli = Client({'autoConnect': False, 'autoDisconnect': False,
+                  'apiKey': getAPIKey()}, conn)
+    return cli, conn
 
-    cli = Client({'autoConnect': False, 'autoDisconnect': False}, conn)
 
-    if len(sys.argv) > 1:
-        optlist, args = getopt.getopt(sys.argv[1:], 'i:j:k:')
+def testConnect():
 
-    for m,t in optlist:
-        if m == '-i':
-            t1 = t
-        elif m =='-j':
-            t2 = t
-        elif m =='-k':
-            t3 = t
+    cli, conn = init()
+
+    def connectedCallback():
+        print('emit connected event successfully')
+    cli.on('connected', connectedCallback)
+
+    cli.connect()
+    conn.check()
+    cli.disconnect()
+
+
+def testConenctAfterSubscribe():
+    cli, conn = init()
+
+    def connectedCallback():
+        print('emit connected event successfully')
+    cli.on('connected', connectedCallback)
+
+    cli.subscribe('stream1', lambda: None)
+    conn.expect(SubscribeRequest(
+        'stream1', apiKey=cli.options['apiKey'], sessionToken=cli.sessionToken))
+    cli.connect()
+    conn.check()
+    cli.disconnect()
+
+
+def testSubscribeAndUnsubscribe():
+    cli, conn = init()
+
+    def connectedCallback():
+        print('emit connected event successfully')
+    cli.on('connected', connectedCallback)
+
+    cli.connect()
+    assert len(cli.subById) == 0
+
+    conn.expect(SubscribeRequest('stream1', apiKey=cli.options['apiKey'], sessionToken=cli.sessionToken))
+
+    subscrip = cli.subscribe('stream1', lambda: None)
+
+    conn.check()
+    assert len(cli.subById) == 1
+
+    assert subscrip.getState() == Subscription.State.SUBSCRIBING
+
+    SubResponse = Response.deserialize(json.dumps([0, 2, None, {
+        'stream': 'stream1',
+        'partition': 0,
+    }]))
+
+    conn.emit('SubscribeResponse', SubResponse)
+    assert subscrip.getState() == Subscription.State.SUBSCRIBED
+
+    conn.expect(UnsubscribeRequest('stream1',apiKey=cli.options['apiKey'],sessionToken=cli.sessionToken))
     
-    if t1 == 'connection_event_handling':
-        if t2 == 'connected':
-            if t3 == 'emit_event_on_client':
-                def emp():
-                    print('emp')
+    cli.unsubscribe(subscrip)
 
-                cli.on('connected', emp)
-                cli.connect()
-            elif t3 == 'event_nothing_if_not_subscribed_to_anything':
-                cli.connect()
-                conn.on('connected',lambda : None)
-            elif t3 == 'send_pending_subscribes':
-                cli.subscribe('stream1', lambda: None)
-                conn.expect(SubscribeRequest('stream1'))
-                cli.connect()
-                conn.on('connected', lambda: None)
-            elif t3 == 'send_pending_when_reconnected':
-                conn.expect(SubscribeRequest('stream1'))
-                conn.expect(SubscribeRequest('stream1'))
-                ss = cli.subscribe('stream1',lambda : None)
-                cli.connect()
-                conn.disconnect()
-                cli.connect()
-            elif t3 == 'not_subscribe_to_unsubsubs_when_recon':
-                conn.expect(SubscribeRequest('stream1'))
-                conn.expect(UnsubscribeRequest('stream1'))
-                sub = cli.subscribe('stream1',lambda : None)
-                cli.connect()
-                conn.emitMessge(SubscribeResponse(sub.streamId))
-                def func():
-                    cli.disconnect()
-                    cli.connect()
-                sub.on('unsubscribed',func)
-                cli.unsubscribe(sub)
-                cli.connection.emitMessge(UnsubscribeResponse(sub.streamId))
+    conn.check()
+    assert len(cli.subById) == 1
 
-    conn.checkSentMessage()
+    assert subscrip.getState() == Subscription.State.UNSUBSCRIBING
+
+    UnsubResponse = Response.deserialize(json.dumps([0, 3, None, {
+        'stream': 'stream1',
+        'partition': 0,
+    }]))
+    conn.emit('UnsubscribeResponse', UnsubResponse)
+
+    assert subscrip.getState() == Subscription.State.UNSUBSCRIBED
+    assert len(cli.subById) == 0
+
+    cli.disconnect()
+
+
+if __name__=='__main__':
+    testConnect()
+    testConenctAfterSubscribe()
+    testSubscribeAndUnsubscribe()

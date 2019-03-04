@@ -2,11 +2,13 @@ import json
 from streamr.protocol.utils.meta import ResponseMeta
 from streamr.protocol.utils.parser import JParser
 from streamr.protocol.payloads import StreamMessage, StreamAndPartition, ResendResponsePayload, ErrorPayload
+from streamr.protocol.errors.error import UnSupportedPayloadError, AbstractFunctionError, UnsupportedVersionError
 
 __all__ = ['Response', 'BroadcastMessage', 'ErrorResponse',
-           'ResendResponseNoResend', 'ResendResponseResending', 
-           'ResendResponseResent', 'SubscribeResponse', 
+           'ResendResponseNoResend', 'ResendResponseResending',
+           'ResendResponseResent', 'SubscribeResponse',
            'UnicastMessage', 'UnsubscribeResponse']
+
 
 class Response(metaclass=ResponseMeta):
 
@@ -15,74 +17,79 @@ class Response(metaclass=ResponseMeta):
         self.payload = payload
         self.subId = subId
 
-        messageClass = self.__class__.messageClassByMessageType.get(self.messageType,None)
-        if not isinstance(payload,messageClass.getPayloadClass()):
-            raise Exception('An unexpected payload was passed to %s! Expected : %s, was %s'% (messageClass.getMessageName(),type(messageClass.getPayloadClass()),type(payload)))
+        messageClass = self.__class__.messageClassByMessageType.get(
+            self.messageType, None)
+        if not isinstance(payload, messageClass.getPayloadClass()):
+            raise UnSupportedPayloadError('An unexpected payload was passed to %s! Expected : %s, was %s' % (
+                messageClass.getMessageName(), type(messageClass.getPayloadClass()), type(payload)))
 
     @classmethod
     def getPayloadClass(cls):
-        raise Exception('Absctract method called - please override in subclass')
+        raise AbstractFunctionError(type(cls))
 
     @classmethod
     def getMessageName(cls):
-        raise Exception('Absctract method called - please override in subclass')
+        raise AbstractFunctionError(type(cls))
 
-
-    def toObject(self,version = 0,payloadVersion = 28):
-        if version ==0:
+    def toObject(self, version=0, payloadVersion=28):
+        if version == 0:
             return [version, self.messageType, self.subId, self.payload.toObject(payloadVersion)]
         else:
-            raise Exception('Supported versions: [0]')
+            raise UnsupportedVersionError(version, 'Supported versions: [0]')
 
-    def serialize(self,version = 0,payloadVersion = 28):
-        return json.dumps(self.toObject(version,payloadVersion))
+    def serialize(self, version=0, payloadVersion=28):
+        return json.dumps(self.toObject(version, payloadVersion))
 
     @classmethod
-    def checkVersion(cls,msg):
-        if msg[0] != 0:
-            raise Exception('Supported versions: [0]')
+    def checkVersion(cls, msg):
+        version = msg[0]
+        if version != 0:
+            raise UnsupportedVersionError(version, 'Supported versions: [0]')
 
     # [version,responsetype,,payload]
     @classmethod
-    def deserialize(cls,msg):
+    def deserialize(cls, msg):
         msg = JParser(msg)
         cls.checkVersion(msg)
-        payload = cls.messageClassByMessageType[msg[1]].getPayloadClass().deserialize(msg[3])
-        args = cls.messageClassByMessageType[msg[1]].getConstructorArguments(msg,payload)
+        payload = cls.messageClassByMessageType[msg[1]].getPayloadClass(
+        ).deserialize(msg[3])
+        args = cls.messageClassByMessageType[msg[1]].getConstructorArguments(
+            msg, payload)
         return cls.messageClassByMessageType[msg[1]](*args)
 
     def __eq__(self, another):
-        if type(self) == type(another):
-            return self.messageType == another.messageType and self.payload == another.payload and self.subId == another.subId 
+        if isinstance(another, type(self)):
+            return self.messageType == another.messageType and self.payload == another.payload and self.subId == another.subId
         else:
             return False
+
 
 class BroadcastMessage(Response):
 
     TYPE = 0
 
-    def __init__(self,msg):
-        super().__init__(self.TYPE,msg)
+    def __init__(self, msg):
+        super().__init__(self.TYPE, msg)
 
     @classmethod
     def getMessageName(cls):
         return 'BroadcastMessage'
-    
+
     @classmethod
     def getPayloadClass(cls):
         return StreamMessage
-    
+
     @classmethod
-    def getConstructorArguments(cls,msg,payload):
+    def getConstructorArguments(cls, msg, payload):
         return [payload]
 
 
 class ErrorResponse(Response):
     TYPE = 7
-    
-    def __init__(self,msg):
-        super().__init__(self.TYPE,msg)
-    
+
+    def __init__(self, msg):
+        super().__init__(self.TYPE, msg)
+
     @classmethod
     def getMessageName(cls):
         return 'ErrorResponse'
@@ -92,30 +99,31 @@ class ErrorResponse(Response):
         return ErrorPayload
 
     @classmethod
-    def getConstructorArguments(cls,msg,payload):
+    def getConstructorArguments(cls, msg, payload):
         return [payload]
 
 
 class ResendResponse(Response):
 
-    def __init__(self,TYPE,streamId,streamPartition,subId):
-        super().__init__(TYPE,ResendResponsePayload(streamId,streamPartition,subId))
-    
+    def __init__(self, TYPE, streamId, streamPartition, subId):
+        super().__init__(TYPE, ResendResponsePayload(streamId, streamPartition, subId))
+
     @classmethod
     def getPayloadClass(cls):
         return ResendResponsePayload
-    
+
     @classmethod
-    def getConstructorArguments(cls,msg,payload):
-        return [payload.streamId,payload.streamPartition,payload.subId]
+    def getConstructorArguments(cls, msg, payload):
+        return [payload.streamId, payload.streamPartition, payload.subId]
+
 
 class ResendResponseNoResend(ResendResponse):
 
     TYPE = 6
-    
-    def __init__(self,streamId,streamPartition,subId):
-        super().__init__(self.TYPE,streamId,streamPartition,subId)
-    
+
+    def __init__(self, streamId, streamPartition, subId):
+        super().__init__(self.TYPE, streamId, streamPartition, subId)
+
     @classmethod
     def getMessageName(cls):
         return 'ResendResponseNoResend'
@@ -125,8 +133,8 @@ class ResendResponseResending(ResendResponse):
 
     TYPE = 4
 
-    def __init__(self,streamId,streamPartition,subId):
-        super().__init__(self.TYPE,streamId,streamPartition,subId)
+    def __init__(self, streamId, streamPartition, subId):
+        super().__init__(self.TYPE, streamId, streamPartition, subId)
 
     @classmethod
     def getMessageName(cls):
@@ -145,8 +153,6 @@ class ResendResponseResent(ResendResponse):
         return 'ResendResponseResent'
 
 
-
-
 class SubscribeResponse(Response):
 
     TYPE = 2
@@ -163,8 +169,8 @@ class SubscribeResponse(Response):
         return StreamAndPartition
 
     @classmethod
-    def getConstructorArguments(cls,msg,payload):
-        return [payload.streamId,payload.streamPartition]
+    def getConstructorArguments(cls, msg, payload):
+        return [payload.streamId, payload.streamPartition]
 
 
 class UnicastMessage(Response):
@@ -172,7 +178,7 @@ class UnicastMessage(Response):
     TYPE = 1
 
     def __init__(self, msg, subId):
-        super().__init__(self.TYPE,msg,subId)
+        super().__init__(self.TYPE, msg, subId)
 
     @classmethod
     def getMessageName(cls):
@@ -184,9 +190,9 @@ class UnicastMessage(Response):
 
     @classmethod
     def getConstructorArguments(cls, msg, payload):
-        return [payload,msg[2]]
+        return [payload, msg[2]]
 
-    
+
 class UnsubscribeResponse(Response):
 
     TYPE = 3

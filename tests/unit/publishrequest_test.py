@@ -16,17 +16,16 @@ msg = {
 
 result = PublishRequest.deserialize(json.dumps(msg))
 
-assert( isinstance(result,PublishRequest))
-assert( result.streamId == msg['stream'])
-assert( result.apiKey == msg['authKey'])
-assert( result.sessionToken == msg['sessionToken'])
-assert( result.content == msg['msg'])
-assert( result.timestamp == msg['ts'])
-assert( result.partitionKey == msg['pkey'])
-assert( result.publisherAddress == msg['addr'])
-assert( result.signatureType == msg['sigtype'])
-assert( result.signature == msg['sig'])
-
+assert(isinstance(result, PublishRequest))
+assert(result.streamId == msg['stream'])
+assert(result.apiKey == msg['authKey'])
+assert(result.sessionToken == msg['sessionToken'])
+assert(result.content == msg['msg'])
+assert(result.timestamp == msg['ts'])
+assert(result.partitionKey == msg['pkey'])
+assert(result.publisherAddress == msg['addr'])
+assert(result.signatureType == msg['sigtype'])
+assert(result.signature == msg['sig'])
 
 
 msg = {
@@ -42,9 +41,10 @@ msg = {
     "sig": 'signature',
 }
 
-serial = PublishRequest('streamId123', 'authKey122', 'sessionToken11', {}, 1533924184016,'deviceId','publisherAddress',1,'signature').serialize()
+serial = PublishRequest('streamId123', 'authKey122', 'sessionToken11', {
+}, 1533924184016, 'deviceId', 'publisherAddress', 1, 'signature').serialize()
 
-assert( type(serial) == str)
+assert(type(serial) == str)
 
 dic = json.loads(serial)
 

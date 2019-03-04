@@ -7,11 +7,11 @@ class ResponseMeta(type):
     messageClassByMessageType = {}
 
     @classmethod
-    def register(cls,clazz,typez):
+    def register(cls, clazz, typez):
         cls.messageClassByMessageType[typez] = clazz
 
-    def __new__(cls,name,base,attrs):
-        
+    def __new__(cls, name, base, attrs):
+
         clazz = super().__new__(cls, name, base, attrs)
         if name not in ['Response', 'ResendResponse']:
             cls.register(clazz, attrs['TYPE'])

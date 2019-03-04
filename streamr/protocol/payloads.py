@@ -1,6 +1,9 @@
-from streamr.protocol.errors.error import InvalidJsonError , UnsupportedVersionError
+from streamr.protocol.errors.error import InvalidJsonError, UnsupportedVersionError, UnSupportedMsgTypeError, ParameterError
 from streamr.protocol.utils.parser import JParser
 import json
+
+__all__ = ['StreamMessage', 'StreamAndPartition',
+           'ResendResponsePayload', 'ErrorPayload']
 
 
 class StreamMessage:
@@ -8,7 +11,7 @@ class StreamMessage:
     class CONTENT_TYPE:
         JSON = 27
 
-    def __init__(self,streamId,streamPartition,timestamp,ttl,offset,previousOffset,contentType,content,signatureType=None,publisherAddress=None,signature=None):
+    def __init__(self, streamId, streamPartition, timestamp, ttl, offset, previousOffset, contentType, content, signatureType=None, publisherAddress=None, signature=None):
         self.streamId = streamId
         self.streamPartition = streamPartition
         self.timestamp = timestamp
@@ -23,30 +26,30 @@ class StreamMessage:
         self.parsedContent = None
 
     def getParsedContent(self):
-        if self.parsedContent != None:
+        if self.parsedContent is not None:
             return self.parsedContent
-        elif self.contentType == StreamMessage.CONTENT_TYPE.JSON and type(self.content) in [list,dict]:
+        elif self.contentType == StreamMessage.CONTENT_TYPE.JSON and isinstance(self.content, (list, dict)):
             self.parsedContent = self.content
-        elif self.contentType == StreamMessage.CONTENT_TYPE.JSON and type(self.content) == str:
+        elif self.contentType == StreamMessage.CONTENT_TYPE.JSON and isinstance(self.content, str):
             try:
                 self.parsedContent = json.loads(self.content)
             except Exception as e:
-                raise   InvalidJsonError(self.streamId,self.content,e,self)
+                raise InvalidJsonError(self.streamId, self.content, e, self)
         else:
-            raise Exception('Unsupported content type: %s' % self.contentType)
+            raise UnSupportedMsgTypeError(self.contentType)
         return self.parsedContent
-    
-    def getSerializedContent(self):
-        if type(self.content) == str:
-            return self.content
-        elif type(self.contentType == StreamMessage.CONTENT_TYPE.JSON) and type(self.content) != str:
-            return json.dumps(self.content)
-        elif type(self.contentType == StreamMessage.CONTENT_TYPE.JSON):
-            raise Exception('Stream payloads can only be objects')
-        else:
-            raise Exception('Unsupported content type: %s' %self.contentType)
 
-    def toObject(self,version=28,parsedContent = False,compact = True):
+    def getSerializedContent(self):
+        if isinstance(self.content, str):
+            return self.content
+        elif self.contentType == StreamMessage.CONTENT_TYPE.JSON and not isinstance(self.content, str):
+            return json.dumps(self.content)
+        elif self.contentType == StreamMessage.CONTENT_TYPE.JSON:
+            raise ParameterError('Stream payloads can only be objects')
+        else:
+            raise UnSupportedMsgTypeError(self.contentType)
+
+    def toObject(self, version=28, parsedContent=False, compact=True):
         if version == 28 or version == 29:
             if compact:
                 arr = [version, self.streamId, self.streamPartition, self.timestamp, self.ttl, self.offset, self.previousOffset,
@@ -57,14 +60,13 @@ class StreamMessage:
                     arr.append(self.signature)
             else:
                 arr = {'streamId': self.streamId,
-                    'streamPartition': self.streamPartition,
-                    'timestamp': self.timestamp,
-                    'ttl': self.ttl,
-                    'offset': self.offset,
-                    'previousOffset': self.previousOffset,
-                    'contentType': self.contentType,
-                    'content': self.getParsedContent() if parsedContent else self.getSerializedContent(),
-                    }
+                       'streamPartition': self.streamPartition,
+                       'timestamp': self.timestamp,
+                       'ttl': self.ttl,
+                       'offset': self.offset,
+                       'previousOffset': self.previousOffset,
+                       'contentType': self.contentType,
+                       'content': self.getParsedContent() if parsedContent else self.getSerializedContent()}
                 if version == 29:
                     arr['signatureType'] = self.signatureType
                     arr['publisherAddress'] = self.publisherAddress
@@ -74,13 +76,12 @@ class StreamMessage:
             raise UnsupportedVersionError(
                 version, 'Supported version:[ 28, 29 ]')
 
-
-    def serialize(self,version=28):
+    def serialize(self, version=28):
         return json.dumps(self.toObject(version))
-    
+
     @classmethod
-    def deserialize(cls,msg,parseContent=True):
-        
+    def deserialize(cls, msg, parseContent=True):
+
         msg = JParser(msg)
 
         '''
@@ -88,29 +89,30 @@ class StreamMessage:
         Version 29: [version, streamId, streamPartition, timestamp, ttl, offset, previousOffset, contentType, content,
                         * signatureType, address, signature]
         '''
-        
+
         if msg[0] == 28 or msg[0] == 29:
             result = cls(*msg[1:])
 
             if parseContent:
                 result.getParsedContent()
-            
+
             return result
         else:
-            raise UnsupportedVersionError(msg[0],'Supported version: [ 28, 29]')
+            raise UnsupportedVersionError(
+                msg[0], 'Supported version: [ 28, 29]')
 
     def isByeMessage(self):
-        bye = self.getParsedContent().get('BYE_KEY',False)
+        bye = self.getParsedContent().get('BYE_KEY', False)
         return bye
 
-    def __eq__(self,another):
-        if type(self) == type(another):
+    def __eq__(self, another):
+        if isinstance(another, type(self)):
             return self.streamId == another.streamId and self.streamPartition == another.streamPartition and \
-            self.timestamp == another.timestamp and self.ttl == another.ttl and \
-            self.offset == another.offset and self.previousOffset == another.previousOffset and \
-            self.contentType == another.contentType and self.content == another.content and \
-            self.signatureType == another.signatureType and self.publisherAddress == another.publisherAddress and \
-            self.signature == another.signature and self.parsedContent == another.parsedContent
+                self.timestamp == another.timestamp and self.ttl == another.ttl and \
+                self.offset == another.offset and self.previousOffset == another.previousOffset and \
+                self.contentType == another.contentType and self.content == another.content and \
+                self.signatureType == another.signatureType and self.publisherAddress == another.publisherAddress and \
+                self.signature == another.signature and self.parsedContent == another.parsedContent
         else:
             return False
 
@@ -140,11 +142,12 @@ class StreamAndPartition:
         msg = JParser(msg)
         return cls(*cls.objectToConstructorArgs(msg))
 
-    def __eq__(self,another):
-        if type(self) == type(another):
+    def __eq__(self, another):
+        if isinstance(another, type(self)):
             return self.streamId == another.streamId and self.streamPartition == another.partition
         else:
             return False
+
 
 class ResendResponsePayload(StreamAndPartition):
 
@@ -161,11 +164,12 @@ class ResendResponsePayload(StreamAndPartition):
                 msg.get('partition', None),
                 msg.get('sub', None)]
 
-    def __eq__(self,another):
-        if type(self) == type(another):
+    def __eq__(self, another):
+        if isinstance(another, type(self)):
             return self.subId == another.subId and super().__eq__(another)
         else:
             return False
+
 
 class ErrorPayload:
 
@@ -179,12 +183,12 @@ class ErrorPayload:
     def deserialize(cls, msg):
         msg = JParser(msg)
         if not msg.get('error', None):
-            raise Exception('Invalid error payload received : %s' %
-                            (json.dumps(msg)))
+            raise ParameterError('Invalid error payload received : %s' %
+                                 (json.dumps(msg)))
         return ErrorPayload(msg['error'])
 
-    def __eq__(self,another):
-        if type(self) == type(another):
+    def __eq__(self, another):
+        if isinstance(another, type(self)):
             return self.error == another.error
         else:
             return False

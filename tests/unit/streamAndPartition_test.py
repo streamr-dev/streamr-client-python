@@ -8,9 +8,9 @@ msg = {
 
 sp = StreamAndPartition.deserialize(json.dumps(msg))
 
-assert isinstance(sp,StreamAndPartition)
-assert sp.streamId == msg.get('stream',None)
-assert sp.streamPartition == msg.get('partition',None)
+assert isinstance(sp, StreamAndPartition)
+assert sp.streamId == msg.get('stream', None)
+assert sp.streamPartition == msg.get('partition', None)
 
 
 msg = {
@@ -18,7 +18,7 @@ msg = {
     'partition': 0,
 }
 
-res = StreamAndPartition('id',0).serialize()
+res = StreamAndPartition('id', 0).serialize()
 assert type(res) == str
 
 assert msg == json.loads(res)

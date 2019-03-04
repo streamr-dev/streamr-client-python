@@ -4,221 +4,343 @@ import time
 from streamr.client.event import Event
 from streamr.protocol.errors.error import InvalidJsonError
 
-def createMsg(offset=1,previousOffset = None,content = {}):
-    return StreamMessage('streamId',0,time.time(),0,offset,previousOffset,StreamMessage.CONTENT_TYPE.JSON,content)
 
-msg = createMsg()
-
-def callback1(content,receiveMsg):
-    assert type(content) == type(msg.getParsedContent())
-    assert content == msg.getParsedContent()
-    assert receiveMsg is msg
+streamId = 'streamId'
+streamPartition = 0
 
 
-sub = Subscription(msg.streamId, msg.streamPartition, 'apiKey', callback1)
-sub.handleMessage(msg)
+def createMsg(offset=1, previousOffset=None, content={}):
+    return StreamMessage(streamId, streamPartition, time.time(), 0, offset, previousOffset, StreamMessage.CONTENT_TYPE.JSON, content)
 
 
-msgs = list(map(lambda x :createMsg(x, None if x == None else x-1),[1,2,3,4,5]))
+def testHandleMessage():
 
-received = []
+    msg = createMsg()
 
-def callback2(content,receivedMsg):
-    received.append(receivedMsg)
-    print(content,len(received))
-    if len(received) == 5:
-        for i in range(5):
-            assert msgs[i] is received[i]
-            print('pass equal')
+    def callback(content, receiveMsg):
+        assert isinstance(content, type(msg.getParsedContent()))
+        assert content == msg.getParsedContent()
+        assert receiveMsg is msg
 
-
-
-sub = Subscription(msg.streamId,msg.streamPartition,'apiKey',callback2)
-
-for m in msgs:
-    sub.handleMessage(m)
+    sub = Subscription(streamId, streamPartition, 'apiKey', callback)
+    sub.handleMessage(msg)
 
 
-count = 0
-def handler1(parseContent,msg):
-    global count
-    count += 1
+def testHandleMessages():
 
-sub = Subscription(msg.streamId,msg.streamPartition,'apiKey',handler1)
+    msgs = list(map(lambda x: createMsg(
+        x, None if x == None else x-1), [1, 2, 3, 4, 5]))
 
-sub.setResending(True)
-sub.handleMessage(msg)
-assert count == 0
-assert(len(sub.queue) == 1)
+    received = []
 
+    def callback(content, receivedMsg):
+        received.append(receivedMsg)
+        if len(received) == 5:
+            for i in range(5):
+                assert msgs[i] is received[i]
 
+    sub = Subscription(streamId, streamPartition, 'apiKey', callback)
 
-
-sub = Subscription(msg.streamId,msg.streamPartition,'apiKey',handler1)
-sub.handleMessage(msg,True)
-assert(count == 1)
-
+    for m in msgs:
+        sub.handleMessage(m)
 
 
-def handler2(a,b):
-    print('done')
+def testHandleMessageWhenResendingWithIsResendFalse():
+
+    msg = createMsg()
+
+    count = 0
+
+    def callback(parseContent, msg):
+        nonlocal count
+        count += 1
+
+    sub = Subscription(streamId, streamPartition, 'apiKey', callback)
+
+    sub.setResending(True)
+    sub.handleMessage(msg)
+    assert count == 0
+    assert(len(sub.queue) == 1)
 
 
-sub = Subscription(msg.streamId,msg.streamPartition,'apiKey',handler2)
-sub.handleMessage(msg)
-sub.handleMessage(msg)
+def testHandleMessageWhenResendingWithIsResendTrue():
+
+    msg = createMsg()
+
+    count = 0
+
+    def callback(parseContent, msg):
+        nonlocal count
+        count += 1
+
+    sub = Subscription(streamId, streamPartition, 'apiKey', callback)
+    sub.setResending(True)
+    sub.handleMessage(msg, True)
+    assert(count == 1)
 
 
-sub = Subscription(msg.streamId,msg.streamPartition,'apikey',handler2)
+def testDuplicatehandling():
 
-sub.handleMessage(msg)
-sub.handleMessage(msg,True)
+    msg = createMsg()
 
-def handler3(a,b):
-    pass
+    def callback(parseContent, msg):
+        print('done')
 
-
-
-msg1 = msg
-msg4 = createMsg(4,3)
+    sub = Subscription(streamId, streamPartition, 'apiKey', callback)
+    sub.handleMessage(msg)
+    sub.handleMessage(msg)
 
 
-sub = Subscription(msg.streamId,msg.streamPartition,'apiKey',handler3)
+def testDuplicatehandlingWithResendingFlg():
+    msg = createMsg()
 
-def onGap(from_,to_):
-    assert from_ == 2
-    assert to_ == 3
-    print('gap detected')
+    def callback(parseContent, msg):
+        print('done')
 
-sub.on('gap',onGap)
+    sub = Subscription(streamId, streamPartition, 'apikey', callback)
 
-sub.handleMessage(msg1)
-sub.handleMessage(msg4)
+    sub.handleMessage(msg)
+    sub.handleMessage(msg, True)
 
 
-msg1 = msg
-msg2 = createMsg(2,1)
-sub = Subscription(msg.streamId,msg.streamPartition,'apiKey',handler3)
-def onGap2(from_, to_):
-    print('should not see this line')
-sub.on('gap',onGap2)
+def testGap():
 
-sub.handleMessage(msg1)
-sub.handleMessage(msg2)
+    def callback(a, b):
+        print('done')
 
-count = 0
-def handler4(x,y):
-    global count
-    count += 1
+    msg1 = createMsg()
+    msg4 = createMsg(4, 3)
 
-byeMsg = createMsg(1, None, {'BYE_KEY': True})
-sub = Subscription(byeMsg.streamId,byeMsg.streamPartition,'apiKey',handler4)
+    sub = Subscription(streamId, streamPartition, 'apiKey', callback)
 
-def lis():
+    def onGap(from_, to_):
+        assert from_ == 2
+        assert to_ == 3
+        print('gap detected')
+
+    sub.on('gap', onGap)
+
+    sub.handleMessage(msg1)
+    sub.handleMessage(msg4)
+
+
+def testNoGap():
+
+    def callback(a, b):
+        print('done')
+
+    msg1 = createMsg()
+    msg2 = createMsg(2, 1)
+    sub = Subscription(streamId, streamPartition, 'apiKey', callback)
+
+    def onGap(from_, to_):
+        raise Exception('GapDetectError')
+
+    sub.on('gap', onGap)
+
+    sub.handleMessage(msg1)
+    sub.handleMessage(msg2)
+
+
+def testBye():
+    count = 0
+
+    def callback(x, y):
+        nonlocal count
+        count += 1
+
+    byeMsg = createMsg(1, None, {'BYE_KEY': True})
+    sub = Subscription(
+        byeMsg.streamId, byeMsg.streamPartition, 'apiKey', callback)
+
+    def test():
+        assert count == 1
+
+    sub.on('done', test)
+
+    sub.handleMessage(byeMsg)
+
+
+def testHandleError():
+
+    err = Exception('Test error')
+
+    def callback(x, y):
+        raise Exception('handleErrorFailed')
+
+    sub = Subscription(streamId, streamPartition, 'apikey', callback)
+
+    def test(msg):
+        assert isinstance(msg, Exception)
+        assert str(msg) == 'Test error'
+
+    sub.on('error', test)
+    sub.handleError(err)
+
+
+def testInvalidJsonError():
+
+    def callback(x, y):
+        print('done')
+
+    sub = Subscription(streamId, streamPartition, 'apiKey', callback)
+
+    def onGap(from_, to_):
+        raise Exception('GapDetectError')
+
+    sub.on('gap', onGap)
+
+    msg1 = createMsg()
+    msg3 = createMsg(3, 2)
+
+    sub.handleMessage(msg1)
+
+    error = InvalidJsonError(streamId, 'invalid json',
+                             'test error msg', createMsg(2, 1))
+
+    sub.handleError(error)
+    sub.handleMessage(msg3)
+
+
+def testGetOriginalResendOptions():
+
+    def callback(x, y):
+        print('done')
+
+    sub = Subscription(streamId, streamPartition,
+                       'apiKey', callback, {'resend_all': True})
+
+    assert sub.getEffectiveResendOptions().get('resend_all', False) == True
+
+
+def testGetResendOptionAfterReceivedData1():
+    msg = createMsg()
+
+    def callback(x, y):
+        print('done')
+    sub = Subscription(streamId, streamPartition,
+                       'apiKey', callback, {'resend_all': True})
+    sub.handleMessage(msg)
+
+    dic = sub.getEffectiveResendOptions()
+
+    assert dic == {'resend_from': 2}
+
+
+def testGetResendOptionAfterReceivedData2():
+
+    def callback(x, y):
+        print('done')
+    sub = Subscription(streamId, streamPartition,
+                       'apiKey', callback, {'resend_from': 1})
+    sub.handleMessage(createMsg(10))
+    dic = sub.getEffectiveResendOptions()
+    assert dic == {'resend_from': 11}
+
+
+def testGetResendOptionAfterReceivedData3():
+
+    def callback(x, y):
+        print('done')
+    sub = Subscription(streamId, streamPartition,
+                       'apikey', callback, {'resend_from_time': time.time()})
+    sub.handleMessage(createMsg(10))
+    dic = sub.getEffectiveResendOptions()
+    assert dic == {'resend_from': 11}
+
+
+def testGetResendOptionAfterReceivedData4():
+    msg = createMsg()
+
+    def callback(x, y):
+        print('done')
+    sub = Subscription(streamId, streamPartition,
+                       'apikey', callback, {'resend_last': 10})
+    sub.handleMessage(msg)
+    dic = sub.getEffectiveResendOptions()
+    assert dic == {'resend_last': 10}
+
+
+def testUpdateState():
+
+    sub = Subscription(streamId, streamPartition,
+                       'apiKey', lambda: print('done'))
+    sub.setState(Subscription.State.SUBSCRIBED)
+    assert sub.getState() == Subscription.State.SUBSCRIBED
+
+
+def testEmitEvent():
+    count = 0
+
+    sub = Subscription(streamId, streamPartition,
+                       'apiKey', lambda: print('done'))
+
+    def test():
+        nonlocal count
+        count += 1
+    sub.on(Subscription.State.SUBSCRIBED, test)
+
+    sub.setState(Subscription.State.SUBSCRIBED)
+
     assert count == 1
-sub.on('done', lis)
-
-sub.handleMessage(byeMsg)
 
 
+def testEventHandlingResent():
 
-err = Exception('Test error')
+    msg = createMsg()
 
-def handler5(x,y):
-    raise Exception('this handler should not be called')
+    count = 0
 
-sub = Subscription(msg.streamId,msg.streamPartition,'apikey',handler5)
-def li(msg):
-    print(isinstance(msg, Exception),msg)
+    def test(x, y):
+        nonlocal count
+        count += 1
 
-sub.on('error',li)
-sub.handleError(err)
+    sub = Subscription(streamId, streamPartition, 'apiKay', test)
 
+    sub.setResending(True)
+    sub.handleMessage(msg)
+    assert count == 0
 
-def hand(x,y):
-    pass
-
-sub = Subscription(msg.streamId,msg.streamPartition,'apiKey',hand)
-
-sub.on('gap',handler5)
-
-msg1 = msg
-msg3 = createMsg(3,2)
-
-sub.handleMessage(msg1)
-
-error = InvalidJsonError(msg.streamId,'invalid json','test error msg',createMsg(2,1))
-
-sub.handleError(error)
-sub.handleMessage(msg3)
-
-def hand(x,y):
-    print('here')
-
-sub = Subscription(msg.streamId,msg.streamPartition,'apiKey',hand,{'resend_all':True})
-
-assert sub.getEffectiveResendOptions().get('resend_all',False) == True
-
-sub = Subscription(msg.streamId,msg.streamPartition,'apiKey',hand,{'resend_all':True})
-sub.handleMessage(msg)
-
-dic = sub.getEffectiveResendOptions()
-
-assert dic == {'resend_from':2}
-
-sub = Subscription(msg.streamId,msg.streamPartition,'apiKey',hand,{'resend_from':1})
-sub.handleMessage(createMsg(10))
-dic = sub.getEffectiveResendOptions()
-assert dic == {'resend_from':11}
+    sub.emit('resent')
+    assert count == 1
 
 
-sub = Subscription(msg.streamId,msg.streamPartition,'apikey',hand,{'resend_from_time':time.time()})
-sub.handleMessage(createMsg(10))
-dic = sub.getEffectiveResendOptions()
-assert dic == {'resend_from':11}
+def testEventHandlingNoResent():
+    count = 0
 
-sub = Subscription(msg.streamId,msg.streamPartition,'apikey',hand,{'resend_last':10})
-sub.handleMessage(msg)
-dic = sub.getEffectiveResendOptions()
-assert dic == {'resend_last':10}
+    msg = createMsg()
 
+    def test(x, y):
+        nonlocal count
+        count += 1
 
-sub = Subscription(msg.streamId,msg.streamPartition,'apiKey',hand)
-sub.setState(Subscription.State.subscribed)
-assert sub.getState() == Subscription.State.subscribed
+    sub = Subscription(streamId, streamPartition, 'apiKey', test)
 
-def emp():
-    pass
-
-sub = Subscription(msg.streamId,msg.streamPartition,'apiKey',hand)
-
-sub.on(Subscription.State.subscribed,emp)
-
-sub.setState(Subscription.State.subscribed)
+    sub.setResending(True)
+    sub.handleMessage(msg)
+    assert count == 0
+    sub.emit('no_resend')
+    assert count == 1
 
 
-count = 0
-def emp(x,y):
-    global count
-    count += 1
-
-sub = Subscription(msg.streamId,msg.streamPartition,'apiKay',emp)
-
-sub.setResending(True)
-sub.handleMessage(msg)
-assert count == 0
-
-sub.emit('resent')
-assert count == 1
-
-count = 0
-def emp(x,y):
-    global count
-    count += 1
-sub = Subscription(msg.streamId,msg.streamPartition,'apiKey',emp)
-
-sub.setResending(True)
-sub.handleMessage(msg)
-assert count == 0
-sub.emit('no_resend')
-assert count == 1
+if __name__ == '__main__':
+    testBye()
+    testDuplicatehandling()
+    testDuplicatehandlingWithResendingFlg()
+    testEmitEvent()
+    testEventHandlingNoResent()
+    testEventHandlingResent()
+    testGap()
+    testGetOriginalResendOptions()
+    testGetResendOptionAfterReceivedData1()
+    testGetResendOptionAfterReceivedData2()
+    testGetResendOptionAfterReceivedData3()
+    testGetResendOptionAfterReceivedData4()
+    testHandleError()
+    testHandleMessage()
+    testHandleMessages()
+    testHandleMessageWhenResendingWithIsResendFalse()
+    testHandleMessageWhenResendingWithIsResendTrue()
+    testInvalidJsonError()
+    testNoGap()
+    testUpdateState()

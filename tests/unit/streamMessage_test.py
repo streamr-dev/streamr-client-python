@@ -2,16 +2,16 @@ from streamr.protocol.payloads import StreamMessage, InvalidJsonError, Unsupport
 import json
 import time
 
-if __name__=='__main__':
 
+def testStreamMessageV28():
 
-    # streammessage version 28
+    # streammessage version 28 deserialize
     arr = [28, 'TsvTbqshTsuLg_HyUjxigA', 0, 1529549961116, 0,
-    941516902, 941499898, StreamMessage.CONTENT_TYPE.JSON, '{"valid": "json"}']
+           941516902, 941499898, StreamMessage.CONTENT_TYPE.JSON, '{"valid": "json"}']
 
     msg = StreamMessage.deserialize(arr)
 
-    assert isinstance(msg,StreamMessage)
+    assert isinstance(msg, StreamMessage)
     assert msg.streamId == 'TsvTbqshTsuLg_HyUjxigA'
     assert msg.streamPartition == 0
     assert msg.timestamp == 1529549961116
@@ -23,32 +23,32 @@ if __name__=='__main__':
 
     # streammessage version 28  content invalid
     arr = [28, 'TsvTbqshTsuLg_HyUjxigA', 0, 1529549961116, 0,
-            941516902, 941499898, StreamMessage.CONTENT_TYPE.JSON, '{"invalid\njson"}']
+           941516902, 941499898, StreamMessage.CONTENT_TYPE.JSON, '{"invalid\njson"}']
 
     try:
         StreamMessage.deserialize(arr)
-    except Exception as e:
+    except InvalidJsonError as e:
         assert isinstance(e, InvalidJsonError)
         assert e.streamId == 'TsvTbqshTsuLg_HyUjxigA'
         assert e.jsonString == '{"invalid\njson"}'
-        assert isinstance(e.streamMessage,StreamMessage)
-    
+        assert isinstance(e.streamMessage, StreamMessage)
 
     # streammessage version 28  serialize
     arr = [28, 'TsvTbqshTsuLg_HyUjxigA', 0, 1529549961116, 0,
-       941516902, 941499898, StreamMessage.CONTENT_TYPE.JSON, '{"valid": "json"}']
+           941516902, 941499898, StreamMessage.CONTENT_TYPE.JSON, '{"valid": "json"}']
     serialized = StreamMessage(
-        'TsvTbqshTsuLg_HyUjxigA', 0, 1529549961116, 0, 941516902, 941499898,StreamMessage.CONTENT_TYPE.JSON,'{"valid": "json"}').serialize(28)
+        'TsvTbqshTsuLg_HyUjxigA', 0, 1529549961116, 0, 941516902, 941499898, StreamMessage.CONTENT_TYPE.JSON, '{"valid": "json"}').serialize(28)
     assert serialized == json.dumps(arr)
 
 
+def testStreamMessageV29():
     # streammessage version 29  deserialize
     arr = [29, 'TsvTbqshTsuLg_HyUjxigA', 0, 1529549961116, 0,
-                  941516902, 941499898, StreamMessage.CONTENT_TYPE.JSON, '{"valid": "json"}', 1, 'address', 'signature']
-    
+           941516902, 941499898, StreamMessage.CONTENT_TYPE.JSON, '{"valid": "json"}', 1, 'address', 'signature']
+
     result = StreamMessage.deserialize(arr)
 
-    assert isinstance(result,StreamMessage)
+    assert isinstance(result, StreamMessage)
 
     assert result.streamId == 'TsvTbqshTsuLg_HyUjxigA'
     assert result.streamPartition == 0
@@ -64,55 +64,64 @@ if __name__=='__main__':
 
     # streammessage version 29  serialize
     arr = [29, 'TsvTbqshTsuLg_HyUjxigA', 0, 1529549961116, 0,
-       941516902, 941499898, StreamMessage.CONTENT_TYPE.JSON, '{"valid": "json"}', 1, 'address', 'signature']
+           941516902, 941499898, StreamMessage.CONTENT_TYPE.JSON, '{"valid": "json"}', 1, 'address', 'signature']
     serialized = StreamMessage('TsvTbqshTsuLg_HyUjxigA', 0,
-                  1529549961116, 0, 941516902, 941499898,StreamMessage.CONTENT_TYPE.JSON,'{"valid": "json"}',1,'address','signature').serialize(29)
+                               1529549961116, 0, 941516902, 941499898, StreamMessage.CONTENT_TYPE.JSON, '{"valid": "json"}', 1, 'address', 'signature').serialize(29)
     assert serialized == json.dumps(arr)
 
+
+def testUnsupportedVersion():
     # unsupported version deserialize
     arr = [123]
 
     try:
         StreamMessage.deserialize(arr)
-    except Exception as e:
-        assert isinstance(e,UnsupportedVersionError)
+    except UnsupportedVersionError as e:
+        assert isinstance(e, UnsupportedVersionError)
         assert e.version == 123
 
     # unsupported version serialize
     try:
         StreamMessage('TsvTbqshTsuLg_HyUjxigA', 0,
-              1529549961116, 0, 941516902, 941499898, StreamMessage.CONTENT_TYPE.JSON, '{"valid":"json"}', 1, 'address', 'signature').serialize(123)
+                      1529549961116, 0, 941516902, 941499898, StreamMessage.CONTENT_TYPE.JSON, '{"valid":"json"}', 1, 'address', 'signature').serialize(123)
     except Exception as e:
-        assert isinstance(e,UnsupportedVersionError)
+        assert isinstance(e, UnsupportedVersionError)
         assert e.version == 123
 
+
+def testGetParsedContent():
     # getParsedContent
-    content = {'foo':'bar'}
-    msg = StreamMessage('streamId',0,time.time(),0,1,None,StreamMessage.CONTENT_TYPE.JSON,json.dumps(content))
-    
-    dic = msg.getParsedContent() 
-    assert dic == content
-
-
     content = {'foo': 'bar'}
-    msg = StreamMessage('streamId',0,time.time(),0,1,None,StreamMessage.CONTENT_TYPE.JSON,content)
+    msg = StreamMessage('streamId', 0, time.time(), 0, 1, None,
+                        StreamMessage.CONTENT_TYPE.JSON, json.dumps(content))
+
     dic = msg.getParsedContent()
     assert dic == content
 
+    content = {'foo': 'bar'}
+    msg = StreamMessage('streamId', 0, time.time(), 0, 1,
+                        None, StreamMessage.CONTENT_TYPE.JSON, content)
+    dic = msg.getParsedContent()
+    assert dic == content
+
+
+def testToObject():
     # to object parse is true
     obj = [28, 'TsvTbqshTsuLg_HyUjxigA', 0, 1529549961116, 0,
-                    941516902, 941499898, StreamMessage.CONTENT_TYPE.JSON, {
-                        'valid': 'json',
-                    }]
+           941516902, 941499898, StreamMessage.CONTENT_TYPE.JSON, {
+               'valid': 'json',
+           }]
 
     msg = StreamMessage(
-                'TsvTbqshTsuLg_HyUjxigA', 0, 1529549961116, 0,
-                941516902, 941499898, StreamMessage.CONTENT_TYPE.JSON, '{"valid": "json"}',
-            )
-    lizt = msg.toObject(28,True)
+        'TsvTbqshTsuLg_HyUjxigA', 0, 1529549961116, 0,
+        941516902, 941499898, StreamMessage.CONTENT_TYPE.JSON, '{"valid": "json"}',
+    )
+    lizt = msg.toObject(28, True)
 
     assert obj == lizt
 
+
+def testToOjbectCompactIsFalse():
 
     # to object  compact is false
     obj = {
@@ -127,15 +136,16 @@ if __name__=='__main__':
     }
 
     msg = StreamMessage(
-                'TsvTbqshTsuLg_HyUjxigA', 0, 1529549961116, 0,
-                941516902, 941499898, StreamMessage.CONTENT_TYPE.JSON, '{"valid": "json"}'
-            )
+        'TsvTbqshTsuLg_HyUjxigA', 0, 1529549961116, 0,
+        941516902, 941499898, StreamMessage.CONTENT_TYPE.JSON, '{"valid": "json"}'
+    )
 
-    dic = msg.toObject(28, False , False)
+    dic = msg.toObject(28, False, False)
 
     assert dic == obj
 
 
+def testToOjbectCompactIsTrue():
     # to object  compact is false parse is True
     obj = {
         'streamId': 'TsvTbqshTsuLg_HyUjxigA',
@@ -150,10 +160,20 @@ if __name__=='__main__':
         }}
 
     msg = StreamMessage(
-                'TsvTbqshTsuLg_HyUjxigA', 0, 1529549961116, 0,
-                941516902, 941499898, StreamMessage.CONTENT_TYPE.JSON, '{"valid": "json"}'
+        'TsvTbqshTsuLg_HyUjxigA', 0, 1529549961116, 0,
+        941516902, 941499898, StreamMessage.CONTENT_TYPE.JSON, '{"valid": "json"}'
     )
 
     dic = msg.toObject(28, True, False)
     assert dic == obj
 
+
+if __name__ == "__main__":
+    testStreamMessageV28()
+    testStreamMessageV29()
+    testGetParsedContent()
+    testToObject()
+    testToOjbectCompactIsFalse()
+    testToOjbectCompactIsTrue()
+    testUnsupportedVersion
+    print('test success')

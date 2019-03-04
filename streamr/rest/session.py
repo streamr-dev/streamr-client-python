@@ -6,20 +6,21 @@ import threading as thd
 import time
 
 
-__all__ = ['getSeToken_APIKey']
+__all__ = ['getSeTokenByAPIKey']
 
 
 logger = logging.getLogger(__name__)
 
-def getSeToken_APIKey(apikey):
+
+def getSeTokenByAPIKey(apikey):
     """
        func:
-	   Get a session token using the API key. NOTE: Auto-update every two hours.
+           Get a session token using the API key. NOTE: Auto-update every two hours.
        paras:
-	   apikey: the streamr API key (in string type)
+           apikey: the streamr API key (in string type)
        return:
-	   SessionToken in string type.(if success)
-	   None: (if failure)
+           SessionToken in string type.(if success)
+           None: (if failure)
     """
     url = 'https://www.streamr.com/api/v1/login/apikey'
     paras = {"Content-Type": "application/json"}
@@ -31,15 +32,14 @@ def getSeToken_APIKey(apikey):
         if req.status_code == 200 or req.status_code == 201:
             logger.info("Get a Session Token successfully. %s" % req.json())
             SessionToken = req.json()['token']
-            
+
             return str(SessionToken)
         else:
-            logger.error("Fail to get a session token. The Status code: %s" %
-                      req.status_code)
+            logger.error("Failed to get a session token. The Status code: %s" %
+                         req.status_code)
             return None
     except:
         import traceback
-        logger.error("Fail to get a Session Token.")
+        logger.error("Failed to get a Session Token.")
         traceback.print_exc()
         return None
-

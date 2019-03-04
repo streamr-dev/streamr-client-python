@@ -1,48 +1,34 @@
 import json
 import time
+import logging
+
+from streamr.protocol.errors.error import ParameterError
+
+__all__ = ['JParser', 'TParser']
 
 
 def JParser(msg):
-    if type(msg) == str:
+    if isinstance(msg, str):
         return json.loads(msg)
-    elif hasattr(msg,'read'):
+    elif hasattr(msg, 'read'):
         return json.load(msg)
-    elif type(msg) in [list,dict]:
+    elif isinstance(msg, (list, dict)):
         return msg
     else:
-        raise Exception('Unknow type %s' % (type(msg)))
+        raise ParameterError('Unsupported msg type: %s' % (type(msg)))
 
 
-def Tparser(msg):
-    if type(msg) == float or type(msg) == int:
+def TParser(msg):
+    if isinstance(msg, (float, int)):
         return msg
 
-    if type(msg) == str:
+    if isinstance(msg, str):
         try:
             timestamp = int(msg)
             return timestamp
         except:
-            # logging.warn('Unknow time format %s'%msg)
-            pass
-
-        try:
-            timestamp = float(msg)
-            return timestamp
-        except:
-            # logging.warn('Unknow time format %s'%msg)
-            pass
-
-        try:
-            timestamp = time.mktime(time.strptime(msg, '%Y-%m-%d %H:%M%S'))
-            return timestamp
-        except:
-            # logging.warn('Unknow time format %s'%msg)
-            pass
-
-        try:
-            timestamp = time.mktime(time.strptime(msg, '%M %m-%d %H:%M%S'))
-            return timestamp
-        except:
-            # logging.warn('Unknow time format %s'%msg)
-            pass
-
+            try:
+                timestamp = float(msg)
+                return timestamp
+            except:
+                logging.warn('Unknow time format %s' % msg)

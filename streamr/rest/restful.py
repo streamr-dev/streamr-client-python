@@ -4,13 +4,13 @@ import json
 import logging
 
 
-__all__ = ['creating', 'getting_by_name', 'getting_by_id']
+__all__ = ['creating', 'gettingByName', 'gettingById']
 
 
 logger = logging.getLogger(__name__)
 
 
-def creating(streamname, streamdes,sessionToken):
+def creating(streamname, streamdes, sessionToken):
     """
     func:
         Create a Stream using the stream name and describtion.
@@ -33,7 +33,7 @@ def creating(streamname, streamdes,sessionToken):
             return req.json()
         else:
             logger.error("Fail to Create a Stream. The Status code: %s" %
-                        req.status_code)
+                         req.status_code)
             return None
     except:
         import traceback
@@ -41,7 +41,8 @@ def creating(streamname, streamdes,sessionToken):
         traceback.print_exc()
         return None
 
-def getting_by_id(streamid,sessionToken):
+
+def gettingById(streamid, sessionToken):
     """
     func:
         Getting a Stream by the stream id
@@ -70,7 +71,8 @@ def getting_by_id(streamid,sessionToken):
         traceback.print_exc()
         return None
 
-def getting_by_name(streamname,sessionToken):
+
+def gettingByName(streamname, sessionToken):
     """
     func:
         Getting a Stream by the stream name.

@@ -1,139 +1,64 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
 
 import threading
 import logging
-from streamr.client.client import Client
-from streamr.rest import session
-
-import json
 import time
 
+from streamr.client.client import Client
+from tests.config import getAPIKey
 
-# In[2]:
+def testClient():
+    logging.basicConfig(level=logging.ERROR, 
+                        format='%(relativeCreated)6d %(threadName)s %(levelname)s :%(message)s')
 
 
-logging.basicConfig(level=logging.ERROR,format='%(relativeCreated)6d %(threadName)s %(levelname)s :%(message)s')
 
+    cli = Client({'apiKey': getAPIKey(), 'autoConnect': False,
+                  'autoDisconnect': False})
 
-# In[3]:
+    while(cli.sessionToken is None):
+        pass
 
+    sessionToken = cli.sessionToken
 
-apiKey = '27ogvnHOQhGFQGETwjf1dAWFd2wXHbTlKCj_uEUTESXw'
+    assert sessionToken is not None
 
+    stream = cli.getOrCreateStream('stream-test')
+    assert(isinstance(stream, list))
+    for s in stream:
+        assert s['name'] == 'stream-test'
 
-# In[4]:
+    streamByName = cli.getStreamByName('stream-test')
+    assert(isinstance(streamByName, list))
+    for s in stream:
+        assert(s['name'] == 'stream-test')
 
+    streamId = stream[0]['id']
+    streamById = cli.getStreamById(streamId)
+    assert(isinstance(streamById, dict))
+    assert(streamById['id'] == streamId)
 
-cli = Client({'apiKey':apiKey,'autoConnect':False,'autoDisconnect':False,'sessionTokenRefreshInterval':10})
+    cli.connect()
 
+    while(not cli.isConnected()):
+        pass
 
-# In[5]:
+    msg = [{"name": 'google', "age": 19}, {"name": "facebook", "age": 11},
+           {"name": "yahoo", "age": 13}, {"name": "twitter", "age": 1}]
 
+    def callback(parsedMsg, msgObject):
+        assert msgObject.streamId == streamId
+        assert (parsedMsg) in msg
 
-print(cli.sessionToken)
-time.sleep(15)
-print(cli.sessionToken)
+    subscription = cli.subscribe(streamId, callback)
 
+    for m in msg:
+        cli.publish(subscription, m)
 
-# In[6]:
+    time.sleep(30)
+    cli.disconnect()
 
+    print('tests passed')
 
-stream = cli.getOrCreateStream('stream-test')
 
-
-# In[7]:
-
-
-stream
-
-
-# In[8]:
-
-
-streamByName = cli.getStreamByName('stream-test')
-
-
-# In[9]:
-
-
-streamByName
-
-
-# In[10]:
-
-
-streamId = streamByName[0]['id']
-
-
-# In[11]:
-
-
-streamId
-
-
-# In[12]:
-
-
-cli.getStreamById(streamId)
-
-
-# In[13]:
-
-
-cli.connection.state
-
-
-# In[14]:
-
-
-cli.connect()
-while(cli.connection.state != cli.connection.State.CONNECTED):
-    pass
-
-
-# In[15]:
-
-
-def callback(parsedMsg,msg):
-    print('received message. Content : ',parsedMsg,' streamId : ',msg.streamId,'streamParition : ',msg.streamPartition)
-
-
-# In[17]:
-
-
-subscription = cli.subscribe(streamId,callback)
-
-
-# In[20]:
-
-
-msg = [{"name":'google',"age":19},{"name":"facebook","age":11},{"name":"yahoo","age":13},{"name":"twitter","age":1}]
-for m in msg:
-    cli.publish(subscription,m)
-
-
-# In[21]:
-
-
-print(cli.sessionToken)
-time.sleep(15)
-print(cli.sessionToken)
-
-
-# In[22]:
-
-
-cli.disconnect()
-
-
-# In[23]:
-
-
-print(cli.sessionToken)
-time.sleep(12)
-print(cli.sessionToken)
-
+if __name__ == "__main__":
+    testClient()
