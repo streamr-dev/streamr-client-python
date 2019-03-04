@@ -5,7 +5,7 @@ import json
 __all__=['getAPIKey']
 
 def getAPIKey():
-    env = Path('tests/.env').open('r')
+    env = Path('tests/env').open('r')
 
     try:
         keys = json.load(env)
