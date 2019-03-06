@@ -20,4 +20,6 @@ myClient.getStreamByName('stream-test')
 
 # get streamById will return the stream with the streamId
 # the return is a dictionary containning the information of the stream
+# Before using this methods, you should replace the streamId with a 32 bytes strings, which
+# can be found in the stream page, also can be obtained using the getStreamByName method.
 myClient.getStreamById('streamId')
