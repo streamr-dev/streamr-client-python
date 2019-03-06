@@ -410,7 +410,7 @@ class Client(Event):
 
     def getOrCreateStream(self, streamname):
         stream = self.getStreamByName(streamname)
-        if len(stream) == 0 or stream is None:
+        if stream is None or (isinstance(stream,list) and len(stream) == 0 ):
             return self.createStream(streamname)
         else:
             return stream
