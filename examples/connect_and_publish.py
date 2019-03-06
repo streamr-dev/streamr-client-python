@@ -1,7 +1,8 @@
 from streamr.client.client import Client
 
 
-myOption = {'apiKey': 'your-api-key'}
+myOption = {'apiKey': 'your-api-key',
+            'autoConnect': False, 'autoDisconnect': False}
 myClient = Client(myOption)
 
 
