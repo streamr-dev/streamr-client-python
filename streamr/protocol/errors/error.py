@@ -1,16 +1,29 @@
+"""
+This doc provide Errors
+"""
+
+__all__ = ['InvalidJsonError', 'UnsupportedVersionError',
+           'UnSupportedPayloadError', 'AbstractFunctionError']
+
 
 class InvalidJsonError(Exception):
+    """
+    When msg can't be parsed with json format
+    """
 
-    def __init__(self, streamId, jsonString, parseError, streamMessage):
+    def __init__(self, stream_id, json_string, parse_error, stream_message):
         super().__init__('Invalid JSON in stream %s: %s. Error while parsing was : %s' %
-                         (streamId, jsonString, parseError))
-        self.streamId = streamId
-        self.jsonString = jsonString
-        self.parseError = parseError
-        self.streamMessage = streamMessage
+                         (stream_id, json_string, parse_error))
+        self.stream_id = stream_id
+        self.json_string = json_string
+        self.parse_error = parse_error
+        self.stream_message = stream_message
 
 
 class UnsupportedVersionError(Exception):
+    """
+    when request version is unsupported
+    """
 
     def __init__(self, version, message):
         super().__init__('Unsupported version : %s : %s' % (version, message))
@@ -18,25 +31,19 @@ class UnsupportedVersionError(Exception):
         self.message = message
 
 
-class UnSupportedMsgTypeError(Exception):
-
-    def __init__(self, msgType):
-        super().__init__('Unknown Message format : %s ' % (msgType))
-
-
 class UnSupportedPayloadError(Exception):
+    """
+    payload is not supported
+    """
 
     def __init__(self, msg):
-        super().__init__('UnsupportedPayloadError :' % (msg))
-
-
-class ParameterError(Exception):
-
-    def __init__(self, msg):
-        super().__init__('Parameter Error :  %s ' % (msg))
+        super().__init__('UnsupportedPayloadError :' % msg)
 
 
 class AbstractFunctionError(Exception):
+    """
+    absctruct function  can't be called
+    """
 
     def __init__(self, clazz):
-        super().__init__('Absctract function should be overrided by son class : %s' % (clazz))
+        super().__init__('Absctract function should be overrided by son class : %s' % clazz)

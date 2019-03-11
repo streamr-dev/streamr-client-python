@@ -1,346 +1,496 @@
+"""
+test subscrption
+"""
+
+
 from streamr.client.subscription import Subscription
-from streamr.protocol.payloads import StreamMessage
+from streamr.protocol.payload import StreamMessage
 import time
-from streamr.client.event import Event
+
+from streamr.util.option import Option
 from streamr.protocol.errors.error import InvalidJsonError
 
 
-streamId = 'streamId'
-streamPartition = 0
+stream_id = 'stream_id'
+stream_partition = 0
 
 
-def createMsg(offset=1, previousOffset=None, content={}):
-    return StreamMessage(streamId, streamPartition, time.time(), 0, offset, previousOffset, StreamMessage.CONTENT_TYPE.JSON, content)
+def create_msg(offset=1, previous_offset=None, content=None):
+    """
+    create a message
+    :param offset:
+    :param previous_offset:
+    :param content:
+    :return:
+    """
+    if content is None:
+        content = dict()
+    return StreamMessage(stream_id, stream_partition, time.time(),
+                         0, offset, previous_offset,
+                         StreamMessage.ContentType.JSON, content)
 
 
-def testHandleMessage():
+def test_handle_message():
 
-    msg = createMsg()
+    msg = create_msg()
 
-    def callback(content, receiveMsg):
-        assert isinstance(content, type(msg.getParsedContent()))
-        assert content == msg.getParsedContent()
-        assert receiveMsg is msg
+    def callback(content, receive_msg):
+        """
+        callback function when subscription received data from server
+        :param content:
+        :param receive_msg:
+        :return:
+        """
+        assert isinstance(content, type(msg.get_parsed_content()))
+        assert content == msg.get_parsed_content()
+        assert receive_msg is msg
 
-    sub = Subscription(streamId, streamPartition, 'apiKey', callback)
-    sub.handleMessage(msg)
+    sub = Subscription(stream_id, stream_partition, 'api_key', callback)
+    sub.handle_message(msg)
 
 
-def testHandleMessages():
+def test_handle_messages():
 
-    msgs = list(map(lambda x: createMsg(
-        x, None if x == None else x-1), [1, 2, 3, 4, 5]))
+    msgs = list(map(lambda x: create_msg(
+        x, None if x is None else x-1), [1, 2, 3, 4, 5]))
 
     received = []
 
-    def callback(content, receivedMsg):
-        received.append(receivedMsg)
+    def callback(content, received_msg):
+        """
+        callback function when subscription received data from server
+        :param content:
+        :param received_msg:
+        :return:
+        """
+        received.append(received_msg)
         if len(received) == 5:
             for i in range(5):
                 assert msgs[i] is received[i]
+                assert content == {}
 
-    sub = Subscription(streamId, streamPartition, 'apiKey', callback)
+    sub = Subscription(stream_id, stream_partition, 'api_key', callback)
 
     for m in msgs:
-        sub.handleMessage(m)
+        sub.handle_message(m)
 
 
-def testHandleMessageWhenResendingWithIsResendFalse():
+def test_handle_message_when_resending_and_is_resend_false():
 
-    msg = createMsg()
+    msg = create_msg()
 
     count = 0
 
-    def callback(parseContent, msg):
+    def callback(_, __):
+        """
+        callback function to test the number of received msg
+        :param _:
+        :param __:
+        :return:
+        """
         nonlocal count
         count += 1
 
-    sub = Subscription(streamId, streamPartition, 'apiKey', callback)
+    sub = Subscription(stream_id, stream_partition, 'api_key', callback)
 
-    sub.setResending(True)
-    sub.handleMessage(msg)
+    sub.set_resending(True)
+    sub.handle_message(msg)
     assert count == 0
     assert(len(sub.queue) == 1)
 
 
-def testHandleMessageWhenResendingWithIsResendTrue():
+def test_handle_message_when_resending_and_is_resend_true():
 
-    msg = createMsg()
+    msg = create_msg()
 
     count = 0
 
-    def callback(parseContent, msg):
+    def callback(_, __):
+        """
+        callback function to test the number of received msg
+        :param _:
+        :param __:
+        :return:
+        """
         nonlocal count
         count += 1
 
-    sub = Subscription(streamId, streamPartition, 'apiKey', callback)
-    sub.setResending(True)
-    sub.handleMessage(msg, True)
+    sub = Subscription(stream_id, stream_partition, 'api_key', callback)
+    sub.set_resending(True)
+    sub.handle_message(msg, True)
     assert(count == 1)
 
 
-def testDuplicatehandling():
+def test_duplicate_handling():
 
-    msg = createMsg()
+    msg = create_msg()
 
-    def callback(parseContent, msg):
-        print('done')
+    count = 0
 
-    sub = Subscription(streamId, streamPartition, 'apiKey', callback)
-    sub.handleMessage(msg)
-    sub.handleMessage(msg)
+    def callback(_, __):
+        """
+        callback function to test whether has received msg
+        :param _:
+        :param __:
+        :return:
+        """
+        nonlocal count
+        count += 1
 
-
-def testDuplicatehandlingWithResendingFlg():
-    msg = createMsg()
-
-    def callback(parseContent, msg):
-        print('done')
-
-    sub = Subscription(streamId, streamPartition, 'apikey', callback)
-
-    sub.handleMessage(msg)
-    sub.handleMessage(msg, True)
+    sub = Subscription(stream_id, stream_partition, 'api_key', callback)
+    sub.handle_message(msg)
+    sub.handle_message(msg)
+    assert count == 1
 
 
-def testGap():
+def test_duplicate_handling_when_resending():
+    msg = create_msg()
 
-    def callback(a, b):
-        print('done')
+    count = 0
 
-    msg1 = createMsg()
-    msg4 = createMsg(4, 3)
+    def callback(_, __):
+        """
+        callback function to test whether has received msg
+        :param _:
+        :param __:
+        :return:
+        """
+        nonlocal count
+        count += 1
 
-    sub = Subscription(streamId, streamPartition, 'apiKey', callback)
+    sub = Subscription(stream_id, stream_partition, 'api_key', callback)
 
-    def onGap(from_, to_):
+    sub.handle_message(msg)
+    sub.handle_message(msg, True)
+    assert count == 1
+
+
+def test_gap():
+
+    count = 0
+
+    def callback(_, __):
+        """
+        callback function to test whether has received msg
+        :param _:
+        :param __:
+        :return:
+        """
+        nonlocal count
+        count += 1
+
+    msg1 = create_msg()
+    msg4 = create_msg(4, 3)
+
+    sub = Subscription(stream_id, stream_partition, 'api_key', callback)
+
+    def on_gap(from_, to_):
+        """
+        test whether gap is detected
+        :param from_:
+        :param to_:
+        :return:
+        """
         assert from_ == 2
         assert to_ == 3
         print('gap detected')
 
-    sub.on('gap', onGap)
+    sub.on('gap', on_gap)
 
-    sub.handleMessage(msg1)
-    sub.handleMessage(msg4)
-
-
-def testNoGap():
-
-    def callback(a, b):
-        print('done')
-
-    msg1 = createMsg()
-    msg2 = createMsg(2, 1)
-    sub = Subscription(streamId, streamPartition, 'apiKey', callback)
-
-    def onGap(from_, to_):
-        raise Exception('GapDetectError')
-
-    sub.on('gap', onGap)
-
-    sub.handleMessage(msg1)
-    sub.handleMessage(msg2)
+    sub.handle_message(msg1)
+    sub.handle_message(msg4)
+    assert count == 1
 
 
-def testBye():
+def test_no_gap():
+
     count = 0
 
-    def callback(x, y):
+    def callback(_, __):
+        """
+        callback function to test whether has received msg
+        :param _:
+        :param __:
+        :return:
+        """
         nonlocal count
         count += 1
 
-    byeMsg = createMsg(1, None, {'BYE_KEY': True})
+    msg1 = create_msg()
+    msg2 = create_msg(2, 1)
+    sub = Subscription(stream_id, stream_partition, 'api_key', callback)
+
+    def on_gap(_, __):
+        """
+        gap should not be detected
+        :param _:
+        :param __:
+        :return:
+        """
+        raise Exception('GapDetectError')
+
+    sub.on('gap', on_gap)
+
+    sub.handle_message(msg1)
+    sub.handle_message(msg2)
+    assert count == 2
+
+
+def test_bye():
+    count = 0
+
+    def callback(_, __):
+        """
+        callback function to test whether has received msg
+        :param _:
+        :param __:
+        :return:
+        """
+        nonlocal count
+        count += 1
+
+    bye_msg = create_msg(1, None, {'BYE_KEY': True})
     sub = Subscription(
-        byeMsg.streamId, byeMsg.streamPartition, 'apiKey', callback)
+        bye_msg.stream_id, bye_msg.stream_partition, 'api_key', callback)
 
     def test():
         assert count == 1
 
     sub.on('done', test)
 
-    sub.handleMessage(byeMsg)
+    sub.handle_message(bye_msg)
 
 
-def testHandleError():
+def test_handle_error():
 
     err = Exception('Test error')
 
-    def callback(x, y):
+    def callback(_, __):
+        """
+        should not be called
+        :param _:
+        :param __:
+        :return:
+        """
         raise Exception('handleErrorFailed')
 
-    sub = Subscription(streamId, streamPartition, 'apikey', callback)
+    sub = Subscription(stream_id, stream_partition, 'api_key', callback)
 
     def test(msg):
         assert isinstance(msg, Exception)
         assert str(msg) == 'Test error'
 
     sub.on('error', test)
-    sub.handleError(err)
+    sub.handle_error(err)
 
 
-def testInvalidJsonError():
+def test_invalid_json_error():
 
-    def callback(x, y):
+    def callback(_, __):
+        """
+        empty callback func
+        :param _:
+        :param __:
+        :return:
+        """
         print('done')
 
-    sub = Subscription(streamId, streamPartition, 'apiKey', callback)
+    sub = Subscription(stream_id, stream_partition, 'api_key', callback)
 
-    def onGap(from_, to_):
+    def on_gap(_, __):
+        """
+        should not detect a gap
+        :param _:
+        :param __:
+        :return:
+        """
         raise Exception('GapDetectError')
 
-    sub.on('gap', onGap)
+    sub.on('gap', on_gap)
 
-    msg1 = createMsg()
-    msg3 = createMsg(3, 2)
+    msg1 = create_msg()
+    msg3 = create_msg(3, 2)
 
-    sub.handleMessage(msg1)
+    sub.handle_message(msg1)
 
-    error = InvalidJsonError(streamId, 'invalid json',
-                             'test error msg', createMsg(2, 1))
+    error = InvalidJsonError(stream_id, 'invalid json',
+                             'test error msg', create_msg(2, 1))
 
-    sub.handleError(error)
-    sub.handleMessage(msg3)
+    sub.handle_error(error)
+    sub.handle_message(msg3)
 
 
-def testGetOriginalResendOptions():
+def test_get_original_resend_option():
 
-    def callback(x, y):
+    def callback(_, __):
+        """
+        empty callback func
+        :param _:
+        :param __:
+        :return:
+        """
         print('done')
 
-    sub = Subscription(streamId, streamPartition,
-                       'apiKey', callback, {'resend_all': True})
+    sub = Subscription(stream_id, stream_partition,
+                       'api_key', callback, Option(resend_all=True))
 
-    assert sub.getEffectiveResendOptions().get('resend_all', False) == True
+    assert sub.get_effective_resend_option().resend_all is True
 
 
-def testGetResendOptionAfterReceivedData1():
-    msg = createMsg()
+def test_get_resend_option_after_received_data1():
+    msg = create_msg()
 
-    def callback(x, y):
+    def callback(_, __):
+        """
+        empty callback func
+        :param _:
+        :param __:
+        :return:
+        """
         print('done')
-    sub = Subscription(streamId, streamPartition,
-                       'apiKey', callback, {'resend_all': True})
-    sub.handleMessage(msg)
+    sub = Subscription(stream_id, stream_partition,
+                       'api_key', callback, Option(resend_all=True))
+    sub.handle_message(msg)
 
-    dic = sub.getEffectiveResendOptions()
+    dic = sub.get_effective_resend_option()
 
-    assert dic == {'resend_from': 2}
+    assert dic.resend_from == 2
 
 
-def testGetResendOptionAfterReceivedData2():
+def test_get_resend_option_after_received_data2():
 
-    def callback(x, y):
+    def callback(_, __):
+        """
+        empty callback func
+        :param _:
+        :param __:
+        :return:
+        """
         print('done')
-    sub = Subscription(streamId, streamPartition,
-                       'apiKey', callback, {'resend_from': 1})
-    sub.handleMessage(createMsg(10))
-    dic = sub.getEffectiveResendOptions()
-    assert dic == {'resend_from': 11}
+    sub = Subscription(stream_id, stream_partition,
+                       'api_key', callback, Option(resend_from=1))
+    sub.handle_message(create_msg(10))
+    dic = sub.get_effective_resend_option()
+    assert dic.resend_from == 11
 
 
-def testGetResendOptionAfterReceivedData3():
+def test_get_resend_option_after_received_data3():
 
-    def callback(x, y):
+    def callback(_, __):
+        """
+        empty callback func
+        :param _:
+        :param __:
+        :return:
+        """
         print('done')
-    sub = Subscription(streamId, streamPartition,
-                       'apikey', callback, {'resend_from_time': time.time()})
-    sub.handleMessage(createMsg(10))
-    dic = sub.getEffectiveResendOptions()
-    assert dic == {'resend_from': 11}
+    sub = Subscription(stream_id, stream_partition,
+                       'api_key', callback, Option(resend_from_time=time.time()))
+    sub.handle_message(create_msg(10))
+    dic = sub.get_effective_resend_option()
+    assert dic.resend_from == 11
 
 
-def testGetResendOptionAfterReceivedData4():
-    msg = createMsg()
+def test_get_resend_option_after_received_data4():
+    msg = create_msg()
 
-    def callback(x, y):
+    def callback(_, __):
+        """
+        empty callback func
+        :param _:
+        :param __:
+        :return:
+        """
         print('done')
-    sub = Subscription(streamId, streamPartition,
-                       'apikey', callback, {'resend_last': 10})
-    sub.handleMessage(msg)
-    dic = sub.getEffectiveResendOptions()
-    assert dic == {'resend_last': 10}
+    sub = Subscription(stream_id, stream_partition,
+                       'api_key', callback, Option(resend_last=10))
+    sub.handle_message(msg)
+    dic = sub.get_effective_resend_option()
+    assert dic.resend_last == 10
 
 
-def testUpdateState():
+def test_update_state():
 
-    sub = Subscription(streamId, streamPartition,
-                       'apiKey', lambda: print('done'))
-    sub.setState(Subscription.State.SUBSCRIBED)
-    assert sub.getState() == Subscription.State.SUBSCRIBED
+    sub = Subscription(stream_id, stream_partition,
+                       'api_key', lambda: print('done'))
+    sub.set_state(Subscription.State.SUBSCRIBED)
+    assert sub.get_state() == Subscription.State.SUBSCRIBED
 
 
-def testEmitEvent():
+def test_emit_event():
     count = 0
 
-    sub = Subscription(streamId, streamPartition,
-                       'apiKey', lambda: print('done'))
+    sub = Subscription(stream_id, stream_partition,
+                       'api_key', lambda: print('done'))
 
     def test():
         nonlocal count
         count += 1
     sub.on(Subscription.State.SUBSCRIBED, test)
 
-    sub.setState(Subscription.State.SUBSCRIBED)
+    sub.set_state(Subscription.State.SUBSCRIBED)
 
     assert count == 1
 
 
-def testEventHandlingResent():
+def test_event_handling_resent():
 
-    msg = createMsg()
+    msg = create_msg()
 
     count = 0
 
-    def test(x, y):
+    def test(_, __):
         nonlocal count
         count += 1
 
-    sub = Subscription(streamId, streamPartition, 'apiKay', test)
+    sub = Subscription(stream_id, stream_partition, 'apiKay', test)
 
-    sub.setResending(True)
-    sub.handleMessage(msg)
+    sub.set_resending(True)
+    sub.handle_message(msg)
     assert count == 0
 
     sub.emit('resent')
     assert count == 1
 
 
-def testEventHandlingNoResent():
+def test_event_handling_no_resent():
     count = 0
 
-    msg = createMsg()
+    msg = create_msg()
 
-    def test(x, y):
+    def test(_, __):
         nonlocal count
         count += 1
 
-    sub = Subscription(streamId, streamPartition, 'apiKey', test)
+    sub = Subscription(stream_id, stream_partition, 'api_key', test)
 
-    sub.setResending(True)
-    sub.handleMessage(msg)
+    sub.set_resending(True)
+    sub.handle_message(msg)
     assert count == 0
     sub.emit('no_resend')
     assert count == 1
 
 
 if __name__ == '__main__':
-    testBye()
-    testDuplicatehandling()
-    testDuplicatehandlingWithResendingFlg()
-    testEmitEvent()
-    testEventHandlingNoResent()
-    testEventHandlingResent()
-    testGap()
-    testGetOriginalResendOptions()
-    testGetResendOptionAfterReceivedData1()
-    testGetResendOptionAfterReceivedData2()
-    testGetResendOptionAfterReceivedData3()
-    testGetResendOptionAfterReceivedData4()
-    testHandleError()
-    testHandleMessage()
-    testHandleMessages()
-    testHandleMessageWhenResendingWithIsResendFalse()
-    testHandleMessageWhenResendingWithIsResendTrue()
-    testInvalidJsonError()
-    testNoGap()
-    testUpdateState()
+    test_bye()
+    test_duplicate_handling()
+    test_duplicate_handling_when_resending()
+    test_emit_event()
+    test_event_handling_no_resent()
+    test_event_handling_resent()
+    test_gap()
+    test_get_original_resend_option()
+    test_get_resend_option_after_received_data1()
+    test_get_resend_option_after_received_data2()
+    test_get_resend_option_after_received_data3()
+    test_get_resend_option_after_received_data4()
+    test_handle_error()
+    test_handle_message()
+    test_handle_messages()
+    test_handle_message_when_resending_and_is_resend_false()
+    test_handle_message_when_resending_and_is_resend_true()
+    test_invalid_json_error()
+    test_no_gap()
+    test_update_state()
+
+    print('subscription test passed')

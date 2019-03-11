@@ -1,10 +1,15 @@
+"""
+ modified from  websock-client _app module
+ we change the close function
+ delete "raise WebSocketException("socket is already opened")" for reconnecting to server
+ delete Dispacher class
+ reformat the sequence of code
+"""
 
-# modified from  websockApp
 
 import inspect
 import select
 import sys
-import threading
 import time
 import traceback
 import logging
@@ -23,6 +28,7 @@ __all__ = ["MyWebSocket"]
 
 logger = logging.getLogger(__name__)
 
+
 class MyWebSocket(object):
     """
     Higher level of APIs are provided.
@@ -33,7 +39,7 @@ class MyWebSocket(object):
                  on_open=None, on_message=None, on_error=None,
                  on_close=None, on_ping=None, on_pong=None,
                  on_cont_message=None,
-                 keep_running=True, get_mask_key=None, cookie=None,
+                 get_mask_key=None, cookie=None,
                  subprotocols=None,
                  on_data=None):
 
@@ -100,18 +106,19 @@ class MyWebSocket(object):
         if not self.sock or self.sock.send(data, opcode) == 0:
             raise WebSocketConnectionClosedException("Connection is already closed.")
 
-    def close(self, **kwargs):
+    def close(self):
         """
-        close websocket connection.
+        our websock are running in a thread
+        we use keep_running flg to shutdown the connection
         """
         self.keep_running = False
 
-    def run_forever(self, sockopt=[], sslopt={},
-                    ping_interval=0, ping_timeout=None,
+    def run_forever(self, sockopt=None, sslopt=None,
+                    ping_interval=0,
                     http_proxy_host=None, http_proxy_port=None,
                     http_no_proxy=None, http_proxy_auth=None,
                     skip_utf8_validation=False,
-                    host=None, origin=None, dispatcher=None,
+                    host=None, origin=None,
                     suppress_origin=False, proxy_type=None):
         """
         run event loop for WebSocket framework.
@@ -139,7 +146,13 @@ class MyWebSocket(object):
         True if other exception was raised during a loop
         """
         self.keep_running = True
-        
+
+        if sockopt is None:
+            sockopt = list()
+
+        if sslopt is None:
+            sslopt = dict()
+
         def teardown(close_frame=None):
             """
             Tears down the connection.
@@ -156,31 +169,31 @@ class MyWebSocket(object):
             self._callback(self.on_close, *close_args)
 
         def read():
-            try:
-                op_code, frame = self.sock.recv_data_frame(True)
+            """
+            receive data from socket
+            :return:
+            """
+            op_code, frame = self.sock.recv_data_frame(True)
 
-                if op_code == ABNF.OPCODE_CLOSE:
-                    self.keep_running = False
-                    self.frame = frame
-                elif op_code == ABNF.OPCODE_PING:
-                    self._callback(self.on_ping, frame.data)
-                elif op_code == ABNF.OPCODE_PONG:
-                    self.last_pong_tm = time.time()
-                    self._callback(self.on_pong, frame.data)
-                elif op_code == ABNF.OPCODE_CONT and self.on_cont_message:
-                    self._callback(self.on_data, frame.data,
-                                    frame.opcode, frame.fin)
-                    self._callback(self.on_cont_message,
-                                    frame.data, frame.fin)
-                else:
-                    data = frame.data
-                    if six.PY3 and op_code == ABNF.OPCODE_TEXT:
-                        data = data.decode("utf-8")
-                    self._callback(self.on_data, data, frame.opcode, True)
-                    self._callback(self.on_message, data)
-            except:
+            if op_code == ABNF.OPCODE_CLOSE:
                 self.keep_running = False
-                logger.error('websock error')
+                self.frame = frame
+            elif op_code == ABNF.OPCODE_PING:
+                self._callback(self.on_ping, frame.data)
+            elif op_code == ABNF.OPCODE_PONG:
+                self.last_pong_tm = time.time()
+                self._callback(self.on_pong, frame.data)
+            elif op_code == ABNF.OPCODE_CONT and self.on_cont_message:
+                self._callback(self.on_data, frame.data,
+                               frame.opcode, frame.fin)
+                self._callback(self.on_cont_message,
+                               frame.data, frame.fin)
+            else:
+                data = frame.data
+                if six.PY3 and op_code == ABNF.OPCODE_TEXT:
+                    data = data.decode("utf-8")
+                self._callback(self.on_data, data, frame.opcode, True)
+                self._callback(self.on_message, data)
 
         try:
             self.sock = WebSocket(
@@ -200,21 +213,22 @@ class MyWebSocket(object):
             self._callback(self.on_open)
 
             while self.sock.connected and self.keep_running:
-                r, w, e = select.select((self.sock.sock, ), (), (),1)
+                r, w, e = select.select((self.sock.sock,), (), (), 1)
                 if r:
                     read()
             teardown(self.frame)
         except (Exception, KeyboardInterrupt, SystemExit) as e:
             self._callback(self.on_error, e)
+            import traceback
+            traceback.print_exc()
             teardown()
-
 
     def _get_close_args(self, data):
         """ this functions extracts the code, reason from the close body
         if they exists, and if the self.on_close except three arguments """
         # if the on_close callback is "old", just return empty list
         if sys.version_info < (3, 0):
-            if not self.on_close or len(inspect.getargspec(self.on_close).args) != 3:
+            if not self.on_close or len(inspect.getfullargspec(self.on_close).args) != 3:
                 return []
         else:
             if not self.on_close or len(inspect.getfullargspec(self.on_close).args) != 3:

@@ -1,64 +1,83 @@
+"""
+test client
+"""
 
-import threading
+
 import logging
 import time
 
 from streamr.client.client import Client
-from tests.config import getAPIKey
+from streamr.util.option import Option
+from tests.config import get_api_key
 
-def testClient():
+
+def test_client():
     logging.basicConfig(level=logging.ERROR, 
                         format='%(relativeCreated)6d %(threadName)s %(levelname)s :%(message)s')
 
+    option = Option.get_default_option()
+    option.auto_connect = False
+    option.auto_disconnect = False
+    option.api_key = get_api_key()
 
+    cli = Client(option)
 
-    cli = Client({'apiKey': getAPIKey(), 'autoConnect': False,
-                  'autoDisconnect': False})
-
-    while(cli.sessionToken is None):
+    while cli.session_token is None:
         pass
 
-    sessionToken = cli.sessionToken
+    session_token = cli.session_token
 
-    assert sessionToken is not None
+    assert session_token is not None
 
-    stream = cli.getOrCreateStream('stream-test')
+    stream = cli.get_or_create_stream('stream-test')
     assert(isinstance(stream, list))
     for s in stream:
         assert s['name'] == 'stream-test'
 
-    streamByName = cli.getStreamByName('stream-test')
-    assert(isinstance(streamByName, list))
+    stream_by_name = cli.get_stream_by_name('stream-test')
+    assert(isinstance(stream_by_name, list))
     for s in stream:
         assert(s['name'] == 'stream-test')
 
-    streamId = stream[0]['id']
-    streamById = cli.getStreamById(streamId)
-    assert(isinstance(streamById, dict))
-    assert(streamById['id'] == streamId)
+    stream_id = stream[0]['id']
+    stream_by_id = cli.get_stream_by_id(stream_id)
+    assert(isinstance(stream_by_id, dict))
+    assert(stream_by_id['id'] == stream_id)
 
-    cli.connect()
+    if not cli.is_connected():
+        cli.connect()
 
-    while(not cli.isConnected()):
+    while not cli.is_connected():
         pass
 
     msg = [{"name": 'google', "age": 19}, {"name": "facebook", "age": 11},
            {"name": "yahoo", "age": 13}, {"name": "twitter", "age": 1}]
 
-    def callback(parsedMsg, msgObject):
-        assert msgObject.streamId == streamId
-        assert (parsedMsg) in msg
+    counts = 0
 
-    subscription = cli.subscribe(streamId, callback)
+    def callback(parsed_msg, msg_object):
+        """
+        callback function which will be called when subscription received a message
+        :param parsed_msg: deserialized messge
+        :param msg_object: message dict object
+        :return:
+        """
+        assert msg_object.stream_id == stream_id
+        assert parsed_msg in msg
+        nonlocal counts
+        counts += 1
+
+    subscription = cli.subscribe(stream_id, callback)
 
     for m in msg:
         cli.publish(subscription, m)
 
     time.sleep(30)
+    assert(counts == 4)
     cli.disconnect()
 
     print('tests passed')
 
 
 if __name__ == "__main__":
-    testClient()
+    test_client()

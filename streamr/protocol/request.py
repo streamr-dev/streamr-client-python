@@ -1,200 +1,255 @@
-from streamr.protocol.utils.parser import JParser
-from streamr.protocol.utils.meta import RequestMeta
-from streamr.protocol.utils.parser import TParser
-from streamr.protocol.errors.error import ParameterError
-from functools import reduce
+"""
+This doc provides the request classes
+"""
+
+
 import json
+
+from streamr.util.compare import EqualFunc
+from streamr.util.option import Option
+from streamr.util.constant import RequestConstant
+from streamr.protocol.util.parser import jparser, tparser
+from streamr.protocol.util.meta import RequestMeta
+from streamr.protocol.errors.error import UnsupportedVersionError
 
 
 __all__ = ['Request', 'PublishRequest', 'ResendRequest',
            'SubscribeRequest', 'UnsubscribeRequest']
 
 
-class Request(metaclass=RequestMeta):
+class Request(EqualFunc, metaclass=RequestMeta):
+    """
+    base class of request
+    """
 
-    def __init__(self, requestType, streamId=None, apiKey=None, sessionToken=None):
+    def __init__(self, request_type, stream_id=None, api_key=None, session_token=None):
 
-        self.requestType = requestType
-        self.streamId = streamId
-        self.apiKey = apiKey
-        self.sessionToken = sessionToken
+        self.request_type = request_type
+        self.stream_id = stream_id
+        self.api_key = api_key
+        self.session_token = session_token
 
-    def toObject(self):
-        return {'type': self.requestType, 'stream': self.streamId, 'authKey': self.apiKey, 'sessionToken': self.sessionToken}
+    def to_object(self):
+        """
+        covert Request to dict
+        :return: dict
+        """
+        return {RequestConstant.TYPE: self.request_type,
+                RequestConstant.STREAM_ID: self.stream_id,
+                RequestConstant.API_KEY: self.api_key,
+                RequestConstant.SESSION_TOKEN: self.session_token}
 
     def serialize(self):
-        return json.dumps(self.toObject())
+        """
+        convert Request to str
+        :return: str
+        """
+        return json.dumps(self.to_object())
 
     @classmethod
-    def checkVersion(cls, msg):
-        version = msg.get('version', None) or 0
-        if version != 0:
-            raise Exception(
-                'UnsupportedVersion : %s. Supported version : [0]' % version)
+    def check_version(cls, msg):
+        """
+        wheter the msg version is valid
+        :param msg: str object
+        :return: bool
+        """
+        version = msg.get('version', None)
+        if version is not None and version != 0:
+            raise UnsupportedVersionError(version, 'only version 0 is valid')
 
     @classmethod
     def deserialize(cls, msg):
-        msg = JParser(msg)
-        cls.checkVersion(msg)
-        args = cls.messageClassByMessageType[msg['type']].getConstructorArguments(
-            msg)
-        return cls.messageClassByMessageType[msg['type']](*args)
-
-    def __eq__(self, another):
-        if isinstance(another, type(self)):
-            return self.requestType == another.requestType and self.streamId == another.streamId and self.apiKey == another.apiKey and self.sessionToken == another.sessionToken
-        else:
-            return False
+        """
+        convert msg to Request object
+        :param msg: str or dict
+        :return: Request object
+        """
+        msg = jparser(msg)
+        cls.check_version(msg)
+        request_class = cls.response_class_by_response_type[msg[RequestConstant.TYPE]]
+        args = request_class.get_constructor_arguments(msg)
+        return request_class(*args)
 
 
 class PublishRequest(Request):
+    """
+    Publish request class
+    """
 
     TYPE = 'publish'
 
-    def __init__(self, streamId, apiKey, sessionToken, content, timestamp=None, partitionKey=None, publisherAddress=None, signatureType=None, signature=None):
-        super().__init__(self.TYPE, streamId, apiKey, sessionToken)
+    def __init__(self, stream_id, api_key, session_token, content,
+                 timestamp=None, partition_key=None,
+                 publisher_address=None, signature_type=None,
+                 signature=None):
+        super().__init__(self.TYPE, stream_id, api_key, session_token)
         if content is None:
-            raise Exception('No content given')
+            raise ValueError('No content given')
 
         self.content = content
-
         self.timestamp = timestamp
-
-        self.partitionKey = partitionKey
-        self.publisherAddress = publisherAddress
-        self.signatureType = signatureType
+        self.partition_key = partition_key
+        self.publisher_address = publisher_address
+        self.signature_type = signature_type
         self.signature = signature
 
-    def getTimestampAsNumber(self):
+    def get_timestamp_as_number(self):
+        """
+        return timestamp as number
+        :return: int or float
+        """
         if self.timestamp:
-            return TParser(self.timestamp)
+            return tparser(self.timestamp)
         return None
 
-    def getSerializedContent(self):
+    def get_serialized_content(self):
+        """
+        serialize content
+        :return: str
+        """
         if isinstance(self.content, str):
             return self.content
         elif isinstance(self.content, (list, dict)):
             return json.dumps(self.content)
 
-        raise ParameterError('Stream payload can only be objects')
+        raise ValueError('Stream payload can only be object')
 
-    def toObject(self):
-        return {**super().toObject(), **{'msg': self.getSerializedContent(),
-                                         'ts': self.getTimestampAsNumber(),
-                                         'pkey': self.partitionKey,
-                                         'addr': self.publisherAddress,
-                                         'sigtype': self.signatureType,
-                                         'sig': self.signature}}
+    def to_object(self):
+        """
+        convert PublishRequest to object
+        :return: dict
+        """
+        return {**super().to_object(),
+                **{RequestConstant.SERIALIZED_CONTENT: self.get_serialized_content(),
+                   RequestConstant.TIMESTAMP: self.get_timestamp_as_number(),
+                   RequestConstant.PARTITION_KEY: self.partition_key,
+                   RequestConstant.PUBLISHER_ADDRESS: self.publisher_address,
+                   RequestConstant.SIGNATURE_TYPE: self.signature_type,
+                   RequestConstant.SIGNATURE: self.signature}}
 
     @classmethod
-    def getConstructorArguments(self, msg):
-        return [msg.get('stream', None),
-                msg.get('authKey', None),
-                msg.get('sessionToken', None),
-                msg.get('msg', None),
-                msg.get('ts', None),
-                msg.get('pkey', None),
-                msg.get('addr', None),
-                msg.get('sigtype', None),
-                msg.get('sig', None)]
-
-    def __eq__(self, another):
-        if isinstance(another, type(self)):
-            return self.content == another.content and self.timestamp == another.timestamp and \
-                self.partitionKey == another.partitionKey and self.publisherAddress == another.publisherAddress and \
-                self.signatureType == another.signatureType and self.signature == another.signature and super().__eq__(another)
-        else:
-            return False
+    def get_constructor_arguments(cls, msg):
+        """
+        get arguments from msg
+        :param msg: dict
+        :return: list
+        """
+        return [msg.get(RequestConstant.STREAM_ID, None),
+                msg.get(RequestConstant.API_KEY, None),
+                msg.get(RequestConstant.SESSION_TOKEN, None),
+                msg.get(RequestConstant.SERIALIZED_CONTENT, None),
+                msg.get(RequestConstant.TIMESTAMP, None),
+                msg.get(RequestConstant.PARTITION_KEY, None),
+                msg.get(RequestConstant.PUBLISHER_ADDRESS, None),
+                msg.get(RequestConstant.SIGNATURE_TYPE, None),
+                msg.get(RequestConstant.SIGNATURE, None)]
 
 
 class ResendRequest(Request):
-
+    """
+    Resend Request
+    """
     TYPE = 'resend'
 
-    def __init__(self, streamId, streamPartition=0, subId=None, resendOptions=None, apiKey=None, sessionToken=None):
-        super().__init__(self.TYPE, streamId, apiKey, sessionToken)
+    def __init__(self, stream_id, stream_partition=0, sub_id=None,
+                 resend_option=None, api_key=None, session_token=None):
 
-        if not resendOptions['resend_all'] and not resendOptions['resend_from_time']:
-            raise ParameterError('Invalid resend options')
+        super().__init__(self.TYPE, stream_id, api_key, session_token)
 
-        if not subId:
-            raise ParameterError('Subscription ID not given')
+        if not isinstance(resend_option, Option) or \
+                (not resend_option.resend_all and not resend_option.resend_from_time):
+            raise ValueError('Invalid resend option')
 
-        self.streamPartition = streamPartition
-        self.subId = subId
-        self.resendOptions = resendOptions
+        if not sub_id:
+            raise ValueError('Subscription ID not given')
 
-    def toObject(self):
-        return {**super().toObject(),  **{'partition': self.streamPartition,
-                                          'sub': self.subId}, **self.resendOptions}
+        self.stream_partition = stream_partition
+        self.sub_id = sub_id
+        self.resend_option = resend_option
+
+    def to_object(self):
+        """
+        convert ResendRequest to object
+        :return: dict
+        """
+        return {**super().to_object(),
+                **{RequestConstant.STREAM_PARTITION: self.stream_partition,
+                   RequestConstant.SUB_ID: self.sub_id},
+                **self.resend_option.to_resend_object()}
 
     @classmethod
-    def getConstructorArguments(cls, msg):
-        resendOptions = {}
-        for key in msg.keys():
-            if str.startswith(key, 'resend_'):
-                resendOptions[key] = msg[key]
-
-        return [msg.get('stream', None),
-                msg.get('partition', None),
-                msg.get('sub', None),
-                resendOptions,
-                msg.get('authKey', None),
-                msg.get('sessionToken', None)]
-
-    def __eq__(self, another):
-        if isinstance(another, type(self)):
-            return self.streamPartition == another.streamPartition and \
-                self.subId == another.subId and self.resendOptions == another.resendOptions and \
-                super().__eq__(another)
-        else:
-            return False
+    def get_constructor_arguments(cls, msg):
+        """
+        get arguments from msg
+        :param msg: dict
+        :return: list
+        """
+        return [msg.get(RequestConstant.STREAM_ID, None),
+                msg.get(RequestConstant.STREAM_PARTITION, None),
+                msg.get(RequestConstant.SUB_ID, None),
+                Option.deserialize_resend(msg),
+                msg.get(RequestConstant.API_KEY, None),
+                msg.get(RequestConstant.SESSION_TOKEN, None)]
 
 
 class SubscribeRequest(Request):
-
+    """
+    Subscribe Request
+    """
     TYPE = 'subscribe'
 
-    def __init__(self, streamId, streamPartition=0, apiKey=None, sessionToken=None):
-        super().__init__(self.TYPE, streamId, apiKey, sessionToken)
+    def __init__(self, stream_id, stream_partition=0, api_key=None, session_token=None):
 
-        self.streamPartition = streamPartition
+        super().__init__(self.TYPE, stream_id, api_key, session_token)
 
-    def toObject(self):
-        return {**super().toObject(), 'partition': self.streamPartition}
+        self.stream_partition = stream_partition
+
+    def to_object(self):
+        """
+        convert subscribeRequest to dict
+        :return: dict
+        """
+        return {**super().to_object(), RequestConstant.STREAM_PARTITION: self.stream_partition}
 
     @classmethod
-    def getConstructorArguments(self, msg):
-        return [msg.get('stream', None),
-                msg.get('partition', None),
-                msg.get('authKey', None),
-                msg.get('sessionToken', None)]
-
-    def __eq__(self, another):
-        if isinstance(another, type(self)):
-            return self.streamPartition == another.streamPartition and super().__eq__(another)
-        else:
-            return False
+    def get_constructor_arguments(cls, msg):
+        """
+        get arguments from msg
+        :param msg: dict
+        :return: list
+        """
+        return [msg.get(RequestConstant.STREAM_ID, None),
+                msg.get(RequestConstant.STREAM_PARTITION, None),
+                msg.get(RequestConstant.API_KEY, None),
+                msg.get(RequestConstant.SESSION_TOKEN, None)]
 
 
 class UnsubscribeRequest(Request):
+    """
+    Unsubscribe Request class
+    """
     TYPE = 'unsubscribe'
 
-    def __init__(self, streamId, streamPartition=0, apiKey=None, sessionToken=None):
-        super().__init__(self.TYPE, streamId, apiKey, sessionToken)
+    def __init__(self, stream_id, stream_partition=0, api_key=None, session_token=None):
+        super().__init__(self.TYPE, stream_id, api_key, session_token)
 
-        self.streamPartition = streamPartition
+        self.stream_partition = stream_partition
 
-    def toObject(self):
-        return {**super().toObject(), 'partition': self.streamPartition}
+    def to_object(self):
+        """
+        convert UnsubscribeRequest to dict
+        :return: dict
+        """
+        return {**super().to_object(), RequestConstant.STREAM_PARTITION: self.stream_partition}
 
     @classmethod
-    def getConstructorArguments(cls, msg):
-        return [msg.get('stream', None),
-                msg.get('partition', None)]
-
-    def __eq__(self, another):
-        if isinstance(another, type(self)):
-            return self.streamPartition == another.streamPartition and super().__eq__(another)
-        else:
-            return False
+    def get_constructor_arguments(cls, msg):
+        """
+        get arguments from msg
+        :param msg: dict
+        :return: list
+        """
+        return [msg.get(RequestConstant.STREAM_ID, None),
+                msg.get(RequestConstant.STREAM_PARTITION, None),
+                msg.get(RequestConstant.API_KEY, None),
+                msg.get(RequestConstant.SESSION_TOKEN, None)]

@@ -1,3 +1,9 @@
+"""
+
+This module provides Client object
+"""
+
+
 from collections import defaultdict
 import logging
 import copy
@@ -6,12 +12,11 @@ import threading
 from streamr.client.event import Event
 from streamr.client.connection import Connection
 from streamr.client.subscription import Subscription
-from streamr.client.errors.error import ParameterError, ConnectionError, ConnectionFailedError
-from streamr.rest.session import getSeTokenByAPIKey
-from streamr.rest.restful import creating, gettingByName, gettingById
-from streamr.protocol.response import Response, BroadcastMessage, ErrorResponse, ResendResponseNoResend, ResendResponseResending, ResendResponseResent, SubscribeResponse, UnicastMessage, UnsubscribeResponse
-from streamr.protocol.payloads import StreamMessage, StreamAndPartition, ResendResponsePayload, ErrorPayload
-from streamr.protocol.request import Request, PublishRequest, ResendRequest, SubscribeRequest, UnsubscribeRequest
+from streamr.util.option import Option
+from streamr.client.errors.error import ConnectionErr
+from streamr.rest.session import get_session_token_by_api_key
+from streamr.rest.stream import creating, getting_by_name, getting_by_id
+from streamr.protocol.request import PublishRequest, ResendRequest, SubscribeRequest, UnsubscribeRequest
 from streamr.protocol.errors.error import InvalidJsonError
 
 __all___ = ['Client']
@@ -21,396 +26,477 @@ logger = logging.getLogger(__name__)
 
 class Client(Event):
     """
-    This class constructs a client object:
-
-    paras:
-        options: dictionary 
-        {"url": 'wss://'
-        "apiKey": 'your-api-Key'
-        }
-
-    methods:
-        createStream(streamName[,streamDescription])
-            creating a new stream with given streamName
-
-        getOrCreateStream(streamName)
-            getting a stream by streamName, if not found then createStream
-
-        getStreamByName(streamName)
-            getting a stream by streamName
-
-        getStreamById(streamId)
-            getting a stream by streamId
-
-        connect()
-            connect to Websock server
-
-        disconnect()
-            disconect from Websock server
-
-        subscribe(optionOrStreamId, callback)
-            subscribe to stream
-            optionOrStreamId: {'stream':streamid} or 'streamId'
-            callback: callback function
-
-        unsubscribe(subscription)
-            unsubscribe a subscription
-
-        unsubscribeAll(streamId)
-            unsubscribe all subscriptions with the streamId
-
-        publish(subscription,data[,apiKey])
-            publish data to stream
-            subscription: contain streamId
-            data: dictionary
-            apiKey: apiKey
-
+    Client class
     """
 
-    def __init__(self, options, connection=None):
+    def __init__(self, option, connection=None):
+
         super().__init__()
 
-        self.options = {'url': 'wss://www.streamr.com/api/v1/ws',
-                        'restUrl': 'https://www.streamr.com/api/v1',
-                        'autoConnect': True,
-                        'autoDisconnect': True,
-                        'auth': defaultdict(dict),
-                        'sessionTokenRefreshInterval': 7200
-                        }
-        self.subsByStream = defaultdict(list)
-        self.subById = {}
-        self.publishQueue = []
+        self.subs_by_stream_id = defaultdict(list)
+        self.sub_by_sub_id = {}
+        self.publish_queue = []
 
-        self.options = {**self.options, **options}
+        if not isinstance(option, Option):
+            raise ValueError('First parameter should be an Option object.')
 
-        if self.options.get('apiKey', None) is None and self.options.get('authKey', None) is None and self.options.get('auth', {}).get('apiKey', None) is None:
-            raise ParameterError('apiKey is required')
+        self.option = option
 
-        if self.options.get('authKey', None) is not None and self.options.get('apiKey', None) is None:
-            self.options['apiKey'] = self.options['authKey']
+        self.option.check_api()
+        self.option.check_url()
 
-        if self.options.get('apiKey', None) is not None:
-            self.options['auth']['apiKey'] = self.options['apiKey']
+        self.session_thread = None
+        self.session_token = None
+        self.session_thread_lock = threading.Lock()
+        self.__auto_update_session_token()
 
-        self.sessionThread = None
-        self.sessionThreadLock = threading.Lock()
-        self.__autoUpdateSessionToken()
-        if self.sessionToken is None:
-            raise ConnectionFailedError('Get sessionToken failed')
+        if self.session_token is None:
+            raise ConnectionErr('Get session token failed')
 
-        self.connection = connection if connection is not None else Connection(
-            self.options)
+        self.connection = connection if connection is not None else Connection(self.option)
 
-        def broadcastMsg(msg):
-            subs = self.subsByStream.get(msg.payload.streamId, None)
+        def broadcast_msg(msg):
+            """
+            callback function of broadcast response
+            :param msg: msg recieved from server
+            :return: None
+            """
+            subs = self.subs_by_stream_id.get(msg.payload.stream_id, None)
             if subs is not None:
                 for sub in subs:
-                    sub.handleMessage(msg.payload, False)
+                    sub.handle_message(msg.payload, False)
             else:
                 logger.debug(
-                    'WARN: message recevied for stream with no subscriptions: %s' % msg.streamId)
-        self.connection.on('BroadcastMessage', broadcastMsg)
+                    'WARN: message receivied for stream with no subscriptions: %s' % msg.stream_id)
+        self.connection.on('BroadcastMessage', broadcast_msg)
 
-        def unicastMsg(msg):
-            if msg.subId is not None and self.subById.get(msg.subId, None) is not None:
-                self.subById[msg.subId].handleMessage(msg.payload, True)
+        def unicast_msg(msg):
+            """
+            callback function of unicast response
+            :param msg: msg received from server
+            :return: None
+            """
+            if msg.sub_id is not None and self.sub_by_sub_id.get(msg.sub_id, None) is not None:
+                self.sub_by_sub_id[msg.sub_id].handle_message(msg.payload, True)
             else:
                 logger.debug('WARN: subscription not fround for stream: %s, sub: %s' % (
-                    msg['streamId'], msg['subId']))
-        self.connection.on('UnicastMessage', unicastMsg)
+                    msg.stream_id, msg.sub_id))
+        self.connection.on('UnicastMessage', unicast_msg)
 
-        def subscribeResponse(msg):
-            subs = self.subsByStream.get(msg.payload.streamId, [])
+        def subscribe_response(msg):
+            """
+            callback function of subscribe response
+            :param msg: msg received from server
+            :return: None
+            """
+            subs = self.subs_by_stream_id.get(msg.payload.stream_id, [])
             if len(subs) != 0:
                 for sub in subs:
                     if sub.resending is False:
-                        sub.setState(Subscription.State.SUBSCRIBED)
-            logger.debug('Client subscribed :%s' % (msg.payload))
-        self.connection.on('SubscribeResponse', subscribeResponse)
+                        sub.set_state(Subscription.State.SUBSCRIBED)
+            logger.debug('Client subscribed :%s' % msg.payload)
+        self.connection.on('SubscribeResponse', subscribe_response)
 
-        def unsubscribeResponse(msg):
-            subs = self.subsByStream.get(msg.payload.streamId, [])
+        def unsubscribe_response(msg):
+            """
+            callback function of unsubscribe response
+            :param msg: msg received from server
+            :return: None
+            """
+            subs = self.subs_by_stream_id.get(msg.payload.stream_id, [])
             if len(subs) != 0:
                 for sub in subs:
-                    self.__removeSubscription(sub)
-                    sub.setState(Subscription.State.UNSUBSCRIBED)
-            self.__checkAutoDisconnect()
-            logger.debug('Client unsubscribed :%s' % (msg.payload))
-        self.connection.on('UnsubscribeResponse', unsubscribeResponse)
+                    self.__remove_subscription(sub)
+                    sub.set_state(Subscription.State.UNSUBSCRIBED)
+            self.__check_auto_disconnect()
+            logger.debug('Client unsubscribed :%s' % msg.payload)
+        self.connection.on('UnsubscribeResponse', unsubscribe_response)
 
-        def resendResponseResending(msg):
-            if self.subById.get(msg.payload.subId, None) is not None:
-                self.subById[msg.payload.subId].emit('resending', msg.payload)
+        def resend_response_resending(msg):
+            """
+            callback function of resendResponseResending
+            :param msg: msg received from server
+            :return: None
+            """
+            if self.sub_by_sub_id.get(msg.payload.sub_id, None) is not None:
+                self.sub_by_sub_id[msg.payload.sub_id].emit('resending', msg.payload)
             else:
-                logger.debug('resent: Subscrption %s is gone already' %
-                             (msg.payload.subId))
-        self.connection.on('ResendResponseResending', resendResponseResending)
+                logger.debug('resent: Subscription %s is gone already' %
+                             msg.payload.sub_id)
+        self.connection.on('ResendResponseResending', resend_response_resending)
 
-        def resendResponseResent(msg):
-            if self.subById.get(msg.payload.subId, None) is not None:
-                self.subById[msg.payload.subId].emit('resent', msg.payload)
+        def resend_response_resent(msg):
+            """
+            callback function of resendResponseResent
+            :param msg: msg received from server
+            :return: None
+            """
+            if self.sub_by_sub_id.get(msg.payload.sub_id, None) is not None:
+                self.sub_by_sub_id[msg.payload.sub_id].emit('resent', msg.payload)
             else:
                 logger.debug(
-                    'resent: Subscription %s is gone already', msg.payload.subId)
-        self.connection.on('ResendResponseResent', resendResponseResent)
+                    'resent: Subscription %s is gone already', msg.payload.sub_id)
+        self.connection.on('ResendResponseResent', resend_response_resent)
 
-        def resendResponseNoResend(msg):
-            if self.subById.get(msg.payload.subId, None) is not None:
-                self.subById[msg.payload.subId].emit('no_resend', msg.payload)
+        def resend_response_no_resend(msg):
+            """
+            callback function of resendResponseNoResent
+            :param msg: msg received from server
+            :return: None
+            """
+            if self.sub_by_sub_id.get(msg.payload.sub_id, None) is not None:
+                self.sub_by_sub_id[msg.payload.sub_id].emit('no_resend', msg.payload)
             else:
-                logger.debug('resent: Subscrption %s is gone already' %
-                             (msg.payload.subId))
-        self.connection.on('ResendResponseNoResend', resendResponseNoResend)
+                logger.debug('resent: Subscription %s is gone already' %
+                             msg.payload.sub_id)
+        self.connection.on('ResendResponseNoResend', resend_response_no_resend)
 
-        def connectedListener():
+        def connected_listener():
+            """
+            callback function of connected event
+            :return: None
+            """
             logger.debug('Connected')
-            for key in self.subsByStream.keys():
-                subs = self.subsByStream[key]
+            for key in self.subs_by_stream_id.keys():
+                subs = self.subs_by_stream_id[key]
                 for sub in subs:
-                    if sub.getState() != Subscription.State.SUBSCRIBED:
-                        self.__resendAndSubscribe(sub)
+                    if sub.get_state() != Subscription.State.SUBSCRIBED:
+                        self.__resend_and_subscribe(sub)
 
-
-            publishQueueCopy = self.publishQueue
-            self.publishQueue = []
-            for element in publishQueueCopy:
+            publish_queue_copy = self.publish_queue
+            self.publish_queue = []
+            for element in publish_queue_copy:
                 self.publish(*element)
             self.emit('connected')
-        self.connection.on('connected', connectedListener)
+        self.connection.on('connected', connected_listener)
 
-        def disconnectedListener():
+        def disconnected_listener():
+            """
+            callback function of disconnected event
+            :return: None
+            """
             logger.debug('Disconnected')
-            for k in self.subsByStream.keys():
-                subs = self.subsByStream[k]
+            for k in self.subs_by_stream_id.keys():
+                subs = self.subs_by_stream_id[k]
                 for sub in subs:
-                    sub.setState(Subscription.State.UNSUBSCRIBED)
+                    sub.set_state(Subscription.State.UNSUBSCRIBED)
             self.emit('disconnected')
-        self.connection.on('disconnected', disconnectedListener)
+        self.connection.on('disconnected', disconnected_listener)
 
         def error(err):
+            """
+            callback function of error event
+            :param err: error object
+            :return: None
+            """
             if isinstance(err, InvalidJsonError):
-                subs = self.subsByStream[err.streamId]
+                subs = self.subs_by_stream_id[err.stream_id]
                 for sub in subs:
-                    sub.handleError(err)
+                    sub.handle_error(err)
             else:
                 logger.error(err.with_traceback(err.__traceback__))
         self.connection.on('error', error)
 
-    def __autoUpdateSessionToken(self):
-        self.sessionThreadLock.acquire()
-        self.sessionToken = getSeTokenByAPIKey(self.options['apiKey'])
-        t = threading.Timer(self.options.get(
-            'sessionTokenRefreshInterval', 7200), self.__autoUpdateSessionToken)
+    def __auto_update_session_token(self):
+        self.session_thread_lock.acquire()
+        self.session_token = get_session_token_by_api_key(self.option.api_key)
+        t = threading.Timer(self.option.session_token_refresh_interval, self.__auto_update_session_token)
         t.start()
-        self.sessionThread = t
-        self.sessionThreadLock.release()
+        self.session_thread = t
+        self.session_thread_lock.release()
 
-    def __addSubscription(self, sub):
-        self.subById[sub.id] = sub
-        self.subsByStream[sub.streamId].append(sub)
+    def __add_subscription(self, sub):
+        self.sub_by_sub_id[sub.sub_id] = sub
+        self.subs_by_stream_id[sub.stream_id].append(sub)
 
-    def __removeSubscription(self, sub):
-        if sub.id in self.subById.keys():
-            self.subById.pop(sub.id)
-        subs = self.subsByStream.get(sub.streamId, [])
+    def __remove_subscription(self, sub):
+        if sub.sub_id in self.sub_by_sub_id.keys():
+            self.sub_by_sub_id.pop(sub.sub_id)
+        subs = self.subs_by_stream_id.get(sub.stream_id, [])
         if len(subs) != 0:
             for i in sorted(range(len(subs)), reverse=True):
-                if subs[i].id == sub.id:
+                if subs[i].sub_id == sub.sub_id:
                     subs.pop(i)
-            self.subsByStream[sub.streamId] = subs
+            self.subs_by_stream_id[sub.stream_id] = subs
 
-    def publish(self, objectOrId, data, apiKey=None):
-
-        if hasattr(objectOrId, 'streamId'):
-            streamId = objectOrId.streamId
-        elif isinstance(objectOrId, str):
-            streamId = objectOrId
+    def publish(self, object_or_id, data, api_key=None):
+        """
+        publis function
+        :param object_or_id: str contains streamId or a object contains a attribute of stream_id
+        :param data: data need be published
+        :param api_key: api_key
+        :return: None
+        """
+        if hasattr(object_or_id, 'stream_id'):
+            stream_id = object_or_id.stream_id
+        elif isinstance(object_or_id, str):
+            stream_id = object_or_id
         else:
-            raise ParameterError(
-                'streamId only support str or objects which contain an streamId attribute')
+            raise ValueError('stream_id only support str or objects containing an stream_id attribute')
 
-        if apiKey is None:
-            apiKey = self.options['auth']['apiKey']
+        if api_key is None:
+            api_key = self.option.api_key
 
         if type(data) not in [list, dict]:
-            raise ParameterError(
-                'Message data must be an object ! Was: %s' % (type(data)))
+            raise ValueError('data must be an dict or list ! Given: %s' % (type(data)))
 
-        if self.isConnected() is True:
-            self.__requestPublish(streamId, data, apiKey)
-        elif self.options.get('autoConnect', False) is True:
-            self.publishQueue.append([streamId, data, apiKey])
+        if self.is_connected() is True:
+            self.__request_publish(stream_id, data, api_key)
+        elif self.option.auto_connect is True:
+            self.publish_queue.append([stream_id, data, api_key])
             try:
                 self.connect()
             except Exception as e:
-                raise ConnectionError(e)
+                raise ConnectionErr(e)
         else:
-            raise ConnectionFailedError(
-                'Wait for conneted event before calling publish or set autoConnect to True')
+            raise ConnectionErr(
+                'Wait for connected event before calling publish or set autoConnect to True')
 
     def connect(self):
-        if self.isConnected() is True:
-            raise ConnectionFailedError('Already connected!')
+        """
+        connect to server for publishing data
+        :return: None
+        """
+        if self.is_connected() is True:
+            raise ConnectionErr('Already connected!')
         elif self.connection.state == Connection.State.CONNECTING:
-            raise ConnectionFailedError('Already connecting')
+            raise ConnectionErr('Already connecting')
 
-        logger.debug('Connecting to %s' % self.options['url'])
-        if self.sessionThread is None or self.sessionThread.is_alive() is False:
-            self.__autoUpdateSessionToken()
+        logger.debug('Connecting to %s' % self.option.url)
+        if self.session_thread is None or self.session_thread.is_alive() is False:
+            self.__auto_update_session_token()
         self.connection.connect()
 
-    def subscribe(self, optionOrStreamId, callback):
-        if isinstance(optionOrStreamId, str):
-            options = {'stream': optionOrStreamId}
-        elif isinstance(optionOrStreamId, dict):
-            options = optionOrStreamId
+    def subscribe(self, stream, callback, legacy_option=None):
+        """
+        subscribe to stream with given id
+        :param stream: object or dict contains stream_id and stream_partition
+        :param callback: callback function when subscribed
+        :param legacy_option: backward compatibility
+        :return: subscription
+        """
+        if hasattr(stream, 'stream_id'):
+            stream_id = stream.stream_id
+        elif isinstance(stream, dict) and 'stream_id' in stream.keys():
+            stream_id = stream['stream_id']
+        elif isinstance(stream, str):
+            stream_id = stream
         else:
-            raise ParameterError('subscribe: options must be an object. Given :%s' % (
-                type(optionOrStreamId)))
+            raise ValueError('subscribe: stream_id and stream_partition should be given. Given :%s' % (
+                type(stream)))
 
-        options = {**self.options, **options}
+        if isinstance(legacy_option, Option):
+            opt = copy.copy(legacy_option)
+            opt.stream_id = stream_id
+        else:
+            opt = Option()
 
-        if options.get('stream', None) is None:
-            raise ParameterError(
-                'subscribe : Invalid arguments: options[\'stream\'] is not given')
+        sub = Subscription(stream_id, opt.stream_partition or 0, self.option.api_key, callback, opt)
 
-        sub = Subscription(options['stream'], options.get('partition', 0), options.get(
-            'apiKey', options.get('auth', {}).get('apiKey', None)), callback, options)
-
-        def gapHandler(from_, to_):
+        def gap_handler(from_, to_):
+            """
+            handler when subscription detect a gap
+            :param from_:
+            :param to_:
+            :return: None
+            """
             if not sub.resending:
-                self.__requestResend(
-                    sub, {'resend_from': from_, 'resend_to': to_})
-        sub.on('gap', gapHandler)
+                self.__request_resend(
+                    sub, Option(resend_from=from_, resend_to=to_))
+        sub.on('gap', gap_handler)
 
-        def doneHandler():
-            logger.debug('done event for sub %s ' % (sub.id))
+        def done_handler():
+            """
+            handler when subscription is done
+            :return: None
+            """
+            logger.debug('done event for sub %s ' % sub.sub_id)
             self.unsubscribe(sub)
-        sub.on('done', doneHandler)
+        sub.on('done', done_handler)
 
-        self.__addSubscription(sub)
+        self.__add_subscription(sub)
 
         if self.connection.state == Connection.State.CONNECTED:
-            self.__resendAndSubscribe(sub)
-        elif self.options.get('autoConnect', False) is True:
+            self.__resend_and_subscribe(sub)
+        elif self.option.auto_connect is True:
             try:
                 self.connect()
             except Exception as e:
-                raise ConnectionError(e)
+                import traceback
+                traceback.print_exc()
+                raise ConnectionErr(e)
+
         return sub
 
     def unsubscribe(self, sub):
+        """
+        unsubscribe stream
+        :param sub: subscription
+        :return: None
+        """
         if sub is None or not isinstance(sub, Subscription):
-            raise ParameterError(
-                'unsubscribe: please give a subscription object as an argument')
+            raise ValueError('unsubscribe: please give a subscription object as an argument')
 
-        if self.subsByStream.get(sub.streamId, None) is not None and len(self.subsByStream.get(sub.streamId, None)) == 1 and self.isConnected() is True and sub.getState() == Subscription.State.SUBSCRIBED:
-            sub.setState(Subscription.State.UNSUBSCRIBING)
-            self.__requestUnsubscribe(sub.streamId)
+        if self.subs_by_stream_id.get(sub.stream_id, None) is not None and \
+                len(self.subs_by_stream_id.get(sub.stream_id, None)) == 1 and \
+                self.is_connected() is True and sub.get_state() == Subscription.State.SUBSCRIBED:
+            sub.set_state(Subscription.State.UNSUBSCRIBING)
+            self.__request_unsubscribe(sub.stream_id)
 
-        elif sub.getState() != Subscription.State.UNSUBSCRIBING and sub.getState() != Subscription.State.UNSUBSCRIBED:
-            self.__removeSubscription(sub)
-            sub.setState(Subscription.State.UNSUBSCRIBED)
-            self.__checkAutoDisconnect()
+        elif sub.get_state() != Subscription.State.UNSUBSCRIBING and \
+                sub.get_state() != Subscription.State.UNSUBSCRIBED:
+            self.__remove_subscription(sub)
+            sub.set_state(Subscription.State.UNSUBSCRIBED)
+            self.__check_auto_disconnect()
 
-    def unsubscribeAll(self, streamId):
-        if not streamId:
-            raise ParameterError('unsubscribeAll: a stream id is required')
-        elif not isinstance(streamId, str):
-            raise ParameterError('unsubscribe: stream id must be a string')
+    def unsubscribe_all(self, stream_id):
+        """
+        unsubscribe stream_id
+        :param stream_id:
+        :return: None
+        """
+        if not isinstance(stream_id, str):
+            raise ValueError('unsubscribe: stream sub_id must be a string')
 
-        if self.subsByStream.get(streamId, None) is not None:
-            subs = copy.copy(self.subsByStream[streamId])
+        if self.subs_by_stream_id.get(stream_id, None) is not None:
+            subs = copy.copy(self.subs_by_stream_id[stream_id])
             for sub in subs:
                 self.unsubscribe(sub)
 
-    def isConnected(self):
+    def is_connected(self):
+        """
+        :return: the connection state
+        """
         return self.connection.state == Connection.State.CONNECTED
 
     def reconnected(self):
+        """
+        reconnect to server
+        :return: None
+        """
         self.connect()
 
     def pause(self):
+        """
+        disconnect from server
+        :return: None
+        """
         self.connection.disconnect()
 
     def disconnect(self):
-        self.subsByStream = defaultdict(list)
-        self.subById = {}
+        """
+        disconnect from server
+        :return: None
+        """
+        self.subs_by_stream_id = defaultdict(list)
+        self.sub_by_sub_id = {}
         self.connection.disconnect()
-        self.sessionThreadLock.acquire()
-        self.sessionThread.cancel()
-        self.sessionThreadLock.release()
+        self.session_thread_lock.acquire()
+        self.session_thread.cancel()
+        self.session_thread_lock.release()
 
-    def __checkAutoDisconnect(self):
-        if self.options.get('autoDisconnect', False) is True and len(self.subsByStream.keys()) == 0:
+    def __check_auto_disconnect(self):
+        if self.option.auto_disconnect is True and len(self.subs_by_stream_id.keys()) == 0:
             logger.debug(
                 'Disconnecting due to no longer being subscribed to any streams')
             self.disconnect()
 
-    def __resendAndSubscribe(self, sub):
-        if sub.getState() != Subscription.State.SUBSCRIBED and not sub.resending:
+    def __resend_and_subscribe(self, sub):
+        if sub.get_state() != Subscription.State.SUBSCRIBED and not sub.resending:
 
             def subscribed():
-                if sub.hasResendOptions():
-                    self.__requestResend(sub)
+                """
+                callback function of subscribed event
+                :return:
+                """
+                if sub.has_resend_option():
+                    self.__request_resend(sub)
             sub.once('subscribed', subscribed)
 
-            self.__requestSubscribe(sub)
+            self.__request_subscribe(sub)
 
-    def __requestSubscribe(self, sub):
+    def __request_subscribe(self, sub):
 
-        subs = self.subsByStream.get(sub.streamId, [])
+        subs = self.subs_by_stream_id.get(sub.stream_id, [])
 
-        subscribedSubs = []
+        subscribed_subs = []
         for s in subs:
-            if s.getState() == Subscription.State.SUBSCRIBED:
-                subscribedSubs.append(s)
+            if s.get_state() == Subscription.State.SUBSCRIBED:
+                subscribed_subs.append(s)
 
-        if len(subscribedSubs) == 0:
+        if len(subscribed_subs) == 0:
             request = SubscribeRequest(
-                sub.streamId, 0, sub.apiKey, self.sessionToken)
-            logger.debug('_requestSubscribing client :%s' % (request))
+                sub.stream_id, 0, sub.api_key, self.session_token)
+            logger.debug('_requestSubscribing client :%s' % request)
             self.connection.send(request)
-            sub.setState(Subscription.State.SUBSCRIBING)
-        elif len(subscribedSubs) > 0:
+            sub.set_state(Subscription.State.SUBSCRIBING)
+        elif len(subscribed_subs) > 0:
             logger.debug(
-                '__requestSubscribe: another subscription for same stream : %s, insta-subscribing' % (sub.streamId))
-            sub.setState(Subscription.State.SUBSCRIBED)
+                '__request_subscribe: another subscription for same stream : %s, subscribing' % sub.stream_id)
+            sub.set_state(Subscription.State.SUBSCRIBED)
 
-    def __requestUnsubscribe(self, streamId, partition=0, apiKey=None):
-        logger.debug('Client unsubscribing stream %s' % (streamId))
+    def __request_unsubscribe(self, stream_id, partition=0, api_key=None):
+        logger.debug('Client unsubscribing stream %s' % stream_id)
         self.connection.send(UnsubscribeRequest(
-            streamId, partition, apiKey if apiKey is not None else self.options['apiKey'], self.sessionToken))
+            stream_id, partition, api_key if api_key is not None else self.option.api_key, self.session_token))
 
-    def __requestResend(self, sub, resendOptions=None):
-        sub.setResending(True)
-        request = ResendRequest(sub.streamId, sub.streamPartition, sub.id, resendOptions if resendOptions is not
-                                None else sub.getEffectiveResendOptions(), sub.apiKey, self.sessionToken)
-        logger.debug('__requestResend :%s' % (request))
+    def __request_resend(self, sub, resend_option=None):
+        sub.set_resending(True)
+        request = ResendRequest(sub.stream_id, sub.stream_partition, sub.sub_id,
+                                resend_option if isinstance(resend_option, Option)
+                                else sub.get_effective_resend_option(),
+                                sub.api_key, self.session_token)
+        logger.debug('__request_resend :%s' % request)
         self.connection.send(request)
 
-    def __requestPublish(self, streamId, data, apiKey):
-        request = PublishRequest(streamId, apiKey, self.sessionToken, data)
-        logger.debug('__requestPublish :%s' % (request))
+    def __request_publish(self, stream_id, data, api_key):
+        request = PublishRequest(stream_id, api_key, self.session_token, data)
+        logger.debug('__request_publish :%s' % request)
         self.connection.send(request)
 
-    def handleError(self, msg):
+    def handle_error(self, msg):
+        """
+        error handeler
+        :param msg: msg
+        :return: None
+        """
         logger.debug(msg)
         self.emit('error', msg)
 
-    def createStream(self, streamname, streamdes=None):
-        stream = creating(streamname, streamdes, self.sessionToken)
+    def create_stream(self, stream_name, stream_des=None):
+        """
+        create stream by given stream_name
+        :param stream_name:
+        :param stream_des:
+        :return: stream object
+        """
+        stream = creating(stream_name, stream_des, self.session_token)
         return stream
 
-    def getStreamByName(self, streamname):
-        return gettingByName(streamname, self.sessionToken)
+    def get_stream_by_name(self, stream_name):
+        """
+        get stream by stream_name
+        :param stream_name: str
+        :return: stream object
+        """
+        return getting_by_name(stream_name, self.session_token)
 
-    def getStreamById(self, streamId):
-        return gettingById(streamId, self.sessionToken)
+    def get_stream_by_id(self, stream_id):
+        """
+        get stream by stream id
+        :param stream_id: str
+        :return: stream object
+        """
+        return getting_by_id(stream_id, self.session_token)
 
-    def getOrCreateStream(self, streamname):
-        stream = self.getStreamByName(streamname)
-        if stream is None or (isinstance(stream,list) and len(stream) == 0 ):
-            return self.createStream(streamname)
+    def get_or_create_stream(self, stream_name):
+        """
+        create stream or get a stream
+        :param stream_name: str
+        :return: stream object
+        """
+        stream = self.get_stream_by_name(stream_name)
+        if stream is None or (isinstance(stream, list) and len(stream) == 0):
+            return self.create_stream(stream_name)
         else:
             return stream

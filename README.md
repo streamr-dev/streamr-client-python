@@ -28,72 +28,86 @@ Here are some quick examples.
 
 #### Importing streamr-client-python module
 
-```python
+```
 from streamr.client.client import Client
+
 ```
 
-#### Creating a StreamrClient instance with given options
+#### Creating a StreamrClient instance with given option
 
-```python
-options = {'apiKey':'your-apiKey','autoConnect':False,'autoDisconnect':False}
+```
+option = {'api_key': 'your-api_key', 'autoConnect': False, 'autoDisconnect': False}
 
-client = Client(options)
+client = Client(option)
+
+
 ```
 #### getting or creating a stream by name
 
-```python
-stream = client.getOrCreateStream('stream-test')
+```
+stream = client.get_or_create_stream('stream-test')
+
+
 ```
 
 #### gettting the stream id
 
-```python
-streamId = stream['id']
+```
+stream_id = stream['id']
+
 ```
 
-#### getting stream by streamName or streamId
+#### getting stream by stream_name or stream_id
 
-```python
-stream = client.getStreamByName('stream-test')
+```
+stream = client.get_stream_by_name('stream-test')
 
-stream = client.getStreamById(streamId)
+
+```
+```
+stream = client.get_tream_by_id(stream_id)
+
 ``` 
 
 #### checking the state of connection
 
-```python
+```
 print(client.connection.state)
+
 ```
 
 #### connect to server
 
-```python
+```
 client.connect()
 while(client.connection.state != client.connection.State.Connected):
 	pass
+	
 ```
 
 #### Subscribing to stream
-```python
-def callback(msg,msgObj):
+```
+def callback(msg,_):
 	print('message received . The Cotent is : %s'%(msg))
 
-subscription = client.subscribe({'stream':streamId}, callback)
+subscription = client.subscribe({'stream':stream_id}, callback)
+
 ```
 
 
 #### publishing data to stream
 
-```python
+```
 
 data = [{"name":'google',"age":19},{"name":"yahoo","age":11},{"name":"facebook","age":13},{"name":"twitter","age":1}]
 for d in data:
     client.publish(subscription, d)
+
 ```
 
 #### disconnect from server
 
-```python
-client.disconnect()
 ```
+client.disconnect()
 
+```

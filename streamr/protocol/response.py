@@ -1,8 +1,15 @@
+"""
+This doc provides the response classes
+"""
+
 import json
-from streamr.protocol.utils.meta import ResponseMeta
-from streamr.protocol.utils.parser import JParser
-from streamr.protocol.payloads import StreamMessage, StreamAndPartition, ResendResponsePayload, ErrorPayload
+
+from streamr.util.compare import EqualFunc
+from streamr.protocol.payload import StreamMessage, StreamAndPartition, ResendResponsePayload, ErrorPayload
+from streamr.protocol.util.meta import ResponseMeta
+from streamr.protocol.util.parser import jparser
 from streamr.protocol.errors.error import UnSupportedPayloadError, AbstractFunctionError, UnsupportedVersionError
+
 
 __all__ = ['Response', 'BroadcastMessage', 'ErrorResponse',
            'ResendResponseNoResend', 'ResendResponseResending',
@@ -10,204 +17,340 @@ __all__ = ['Response', 'BroadcastMessage', 'ErrorResponse',
            'UnicastMessage', 'UnsubscribeResponse']
 
 
-class Response(metaclass=ResponseMeta):
+class Response(EqualFunc, metaclass=ResponseMeta):
+    """
+    Response class
+    """
 
-    def __init__(self, messageType, payload=None, subId=None):
-        self.messageType = messageType
+    def __init__(self, response_type, payload=None, sub_id=None):
+        self.response_type = response_type
         self.payload = payload
-        self.subId = subId
+        self.sub_id = sub_id
 
-        messageClass = self.__class__.messageClassByMessageType.get(
-            self.messageType, None)
-        if not isinstance(payload, messageClass.getPayloadClass()):
-            raise UnSupportedPayloadError('An unexpected payload was passed to %s! Expected : %s, was %s' % (
-                messageClass.getMessageName(), type(messageClass.getPayloadClass()), type(payload)))
+        response_class = self.__class__.response_class_by_response_type[self.response_type]
+        if not isinstance(payload, response_class.get_payload_class()):
+            raise UnSupportedPayloadError('Response %s expected payload type: %s. %s given' % (
+                response_class.get_response_name(), type(response_class.get_payload_class()), type(payload)))
 
     @classmethod
-    def getPayloadClass(cls):
+    def get_payload_class(cls):
+        """
+        abstract method return payload class
+        :return: payload class
+        """
         raise AbstractFunctionError(type(cls))
 
     @classmethod
-    def getMessageName(cls):
+    def get_response_name(cls):
+        """
+        abstract method return response name
+        :return: resnponse name
+        """
         raise AbstractFunctionError(type(cls))
 
-    def toObject(self, version=0, payloadVersion=28):
+    def to_object(self, version=0, payload_version=28):
+        """
+        convert Response to dict
+        :param version: 0 by default
+        :param payload_version: 28 or 29
+        :return: dict
+        """
         if version == 0:
-            return [version, self.messageType, self.subId, self.payload.toObject(payloadVersion)]
+            return [version, self.response_type, self.sub_id, self.payload.to_object(payload_version)]
         else:
             raise UnsupportedVersionError(version, 'Supported versions: [0]')
 
-    def serialize(self, version=0, payloadVersion=28):
-        return json.dumps(self.toObject(version, payloadVersion))
+    def serialize(self, version=0, payload_version=28):
+        """
+        serialize Response object
+        :param version: 0 by default
+        :param payload_version: 28 or 29
+        :return: str
+        """
+        return json.dumps(self.to_object(version, payload_version))
 
     @classmethod
-    def checkVersion(cls, msg):
-        version = msg[0]
+    def check_version(cls, version):
+        """
+        check_api request version
+        :param version:
+        :return:
+        """
         if version != 0:
             raise UnsupportedVersionError(version, 'Supported versions: [0]')
 
-    # [version,responsetype,,payload]
+    # [version, response_type, sub_id, payload]
     @classmethod
-    def deserialize(cls, msg):
-        msg = JParser(msg)
-        cls.checkVersion(msg)
-        payload = cls.messageClassByMessageType[msg[1]].getPayloadClass(
-        ).deserialize(msg[3])
-        args = cls.messageClassByMessageType[msg[1]].getConstructorArguments(
-            msg, payload)
-        return cls.messageClassByMessageType[msg[1]](*args)
-
-    def __eq__(self, another):
-        if isinstance(another, type(self)):
-            return self.messageType == another.messageType and self.payload == another.payload and self.subId == another.subId
-        else:
-            return False
+    def deserialize(cls, ori_msg):
+        """
+        deserialize from msg to response object
+        :param ori_msg: str or dict
+        :return: resnponse object
+        """
+        version, response_type, sub_id, payload_msg = jparser(ori_msg)
+        cls.check_version(version)
+        response_class = cls.response_class_by_response_type[response_type]
+        payload = response_class.get_payload_class().deserialize(payload_msg)
+        args = response_class.get_constructor_arguments(sub_id, payload)
+        return response_class(*args)
 
 
 class BroadcastMessage(Response):
-
+    """
+    BroadcastMessage response class
+    """
     TYPE = 0
 
-    def __init__(self, msg):
-        super().__init__(self.TYPE, msg)
+    def __init__(self, payload):
+        super().__init__(self.TYPE, payload)
 
     @classmethod
-    def getMessageName(cls):
+    def get_response_name(cls):
+        """
+        return response name
+        :return: str
+        """
         return 'BroadcastMessage'
 
     @classmethod
-    def getPayloadClass(cls):
+    def get_payload_class(cls):
+        """
+        return payload class
+        :return: payload class
+        """
         return StreamMessage
 
     @classmethod
-    def getConstructorArguments(cls, msg, payload):
+    def get_constructor_arguments(cls, _, payload):
+        """
+        return constructor args
+        :param _: sub_id which is useless for broadcast message
+        :param payload: payload object
+        :return: args
+        """
         return [payload]
 
 
 class ErrorResponse(Response):
+    """
+    Error response class
+    """
     TYPE = 7
 
-    def __init__(self, msg):
-        super().__init__(self.TYPE, msg)
+    def __init__(self, payload):
+        super().__init__(self.TYPE, payload)
 
     @classmethod
-    def getMessageName(cls):
+    def get_response_name(cls):
+        """
+        return response name
+        :return: str
+        """
         return 'ErrorResponse'
 
     @classmethod
-    def getPayloadClass(cls):
+    def get_payload_class(cls):
+        """
+        return payload class
+        :return: payload class
+        """
         return ErrorPayload
 
     @classmethod
-    def getConstructorArguments(cls, msg, payload):
+    def get_constructor_arguments(cls, _, payload):
+        """
+        return constructor args
+        :param _: sub_id which is useless for broadcast message
+        :param payload: payload object
+        :return: args
+        """
         return [payload]
 
 
 class ResendResponse(Response):
+    """
+    ResendResponse class
+    """
 
-    def __init__(self, TYPE, streamId, streamPartition, subId):
-        super().__init__(TYPE, ResendResponsePayload(streamId, streamPartition, subId))
+    def __init__(self, response_type, stream_id, stream_partition, sub_id):
+        super().__init__(response_type, ResendResponsePayload(stream_id, stream_partition, sub_id))
 
     @classmethod
-    def getPayloadClass(cls):
+    def get_payload_class(cls):
+        """
+        return payload class
+        :return: payload class
+        """
         return ResendResponsePayload
 
     @classmethod
-    def getConstructorArguments(cls, msg, payload):
-        return [payload.streamId, payload.streamPartition, payload.subId]
+    def get_constructor_arguments(cls, _, payload):
+        """
+        return constructor args
+        :param _: sub_id
+        :param payload:
+        :return:
+        """
+        return [payload.stream_id, payload.stream_partition, payload.sub_id]
 
 
 class ResendResponseNoResend(ResendResponse):
-
+    """
+    ResendResponseNoResend class
+    """
     TYPE = 6
 
-    def __init__(self, streamId, streamPartition, subId):
-        super().__init__(self.TYPE, streamId, streamPartition, subId)
+    def __init__(self, stream_id, stream_partition, sub_id):
+        super().__init__(self.TYPE, stream_id, stream_partition, sub_id)
 
     @classmethod
-    def getMessageName(cls):
+    def get_response_name(cls):
+        """
+        return response name
+        :return: response name
+        """
         return 'ResendResponseNoResend'
 
 
 class ResendResponseResending(ResendResponse):
-
+    """
+    ResendResponseResending class
+    """
     TYPE = 4
 
-    def __init__(self, streamId, streamPartition, subId):
-        super().__init__(self.TYPE, streamId, streamPartition, subId)
+    def __init__(self, stream_id, stream_partition, sub_id):
+        super().__init__(self.TYPE, stream_id, stream_partition, sub_id)
 
     @classmethod
-    def getMessageName(cls):
+    def get_response_name(cls):
+        """
+        return response name
+        :return: response name
+        """
         return 'ResendResponseResending'
 
 
 class ResendResponseResent(ResendResponse):
-
+    """
+    ResendResponseResent class
+    """
     TYPE = 5
 
-    def __init__(self, streamId, streamPartition, subId):
-        super().__init__(self.TYPE, streamId, streamPartition, subId)
+    def __init__(self, stream_id, stream_partition, sub_id):
+        super().__init__(self.TYPE, stream_id, stream_partition, sub_id)
 
     @classmethod
-    def getMessageName(cls):
+    def get_response_name(cls):
+        """
+        return response name
+        :return: response name
+        """
         return 'ResendResponseResent'
 
 
 class SubscribeResponse(Response):
-
+    """
+    SubscribeResponse class
+    """
     TYPE = 2
 
-    def __init__(self, streamId, streamPartition=0):
-        super().__init__(self.TYPE, StreamAndPartition(streamId, streamPartition))
+    def __init__(self, stream_id, stream_partition=0):
+        super().__init__(self.TYPE, StreamAndPartition(stream_id, stream_partition))
 
     @classmethod
-    def getMessageName(cls):
+    def get_response_name(cls):
+        """
+        resend response name
+        :return: response name
+        """
         return 'SubscribeResponse'
 
     @classmethod
-    def getPayloadClass(cls):
+    def get_payload_class(cls):
+        """
+        return payload class
+        :return: payload class
+        """
         return StreamAndPartition
 
     @classmethod
-    def getConstructorArguments(cls, msg, payload):
-        return [payload.streamId, payload.streamPartition]
+    def get_constructor_arguments(cls, _, payload):
+        """
+        return constructor args
+        :param _: sub_id
+        :param payload: payload
+        :return: list
+        """
+        return [payload.stream_id, payload.stream_partition]
 
 
 class UnicastMessage(Response):
-
+    """
+    UnicastMessage class
+    """
     TYPE = 1
 
-    def __init__(self, msg, subId):
-        super().__init__(self.TYPE, msg, subId)
+    def __init__(self, payload, sub_id):
+        super().__init__(self.TYPE, payload, sub_id)
 
     @classmethod
-    def getMessageName(cls):
+    def get_response_name(cls):
+        """
+        return response name
+        :return: response name
+        """
         return 'UnicastMessage'
 
     @classmethod
-    def getPayloadClass(cls):
+    def get_payload_class(cls):
+        """
+        return payload class
+        :return: payload class
+        """
         return StreamMessage
 
     @classmethod
-    def getConstructorArguments(cls, msg, payload):
-        return [payload, msg[2]]
+    def get_constructor_arguments(cls, sub_id, payload):
+        """
+        return constructor args
+        :param sub_id: sub_id
+        :param payload: payload
+        :return: list
+        """
+        return [payload, sub_id]
 
 
 class UnsubscribeResponse(Response):
-
+    """
+    UnsubscribeResponse class
+    """
     TYPE = 3
 
-    def __init__(self, streamId, streamPartition=0):
-        super().__init__(self.TYPE, StreamAndPartition(streamId, streamPartition))
+    def __init__(self, stream_id, stream_partition=0):
+        super().__init__(self.TYPE, StreamAndPartition(stream_id, stream_partition))
 
     @classmethod
-    def getMessageName(cls):
+    def get_response_name(cls):
+        """
+        return response name
+        :return: response name
+        """
         return 'UnsubscribeResponse'
 
     @classmethod
-    def getPayloadClass(cls):
+    def get_payload_class(cls):
+        """
+        return payload class
+        :return:  payload class
+        """
         return StreamAndPartition
 
     @classmethod
-    def getConstructorArguments(cls, msg, payload):
-        return [payload.streamId, payload.streamPartition]
+    def get_constructor_arguments(cls, _, payload):
+        """
+        return constructor args
+        :param _: sub_id
+        :param payload: payload
+        :return: list
+        """
+        return [payload.stream_id, payload.stream_partition]

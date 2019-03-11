@@ -1,172 +1,257 @@
+"""
+provide the subscription class
+"""
+
 import logging
-import json
 
 from streamr.client.event import Event
-from streamr.client.errors.error import ParameterError
+from streamr.util.option import Option
 from streamr.protocol.errors.error import InvalidJsonError
-
 
 __all__ = ['Subscription']
 
-
 logger = logging.getLogger(__name__)
 
+SUB_ID_COUNTS = 0
 
-subId = 0
 
-
-def generateSubscriptionId():
-    global subId
-    subId += 1
-    return str(subId)
+def generate_subscription_id():
+    """
+    generate a unique id for subscription
+    :return:
+    """
+    global SUB_ID_COUNTS
+    SUB_ID_COUNTS += 1
+    return str(SUB_ID_COUNTS)
 
 
 class Subscription(Event):
+    """
+    subscription class
+    """
 
     class State:
+        """
+        state of subscription
+        """
         SUBSCRIBING = 'SUBSCRIBING'
         SUBSCRIBED = 'SUBSCRIBED'
-        UNSUBSCRIBING = 'UNSUBSCRIBNG'
+        UNSUBSCRIBING = 'UNSUBSCRIBING'
         UNSUBSCRIBED = 'UNSUBSCRIBED'
 
-    def __init__(self, streamId=None, streamPartition=0, apiKey=None, callback=lambda x, y: None, options={}):
+    def __init__(self, stream_id=None, stream_partition=0, api_key=None, callback=None, option=None):
         super().__init__()
 
-        if streamId is None:
-            raise ParameterError('No stream id given!')
-        if callback is None:
-            raise ParameterError('No callback given')
+        if stream_id is None:
+            raise ValueError('No stream_id given!')
+        if api_key is None:
+            raise ValueError('No api_key given!')
+        if not hasattr(callback, '__call__'):
+            raise ValueError('No callback given')
 
-        self.id = generateSubscriptionId()
-        self.streamId = streamId
-        self.streamPartition = streamPartition
-        self.apiKey = apiKey
-        self.callback = callback
-        self.options = options
+        self.sub_id = generate_subscription_id()
+        self.stream_id = stream_id
+        self.stream_partition = stream_partition
+        self.api_key = api_key
+        self.callback = callback if hasattr(callback, '__call__') else lambda x, y: None
+        if isinstance(option, Option):
+            self.option = option
+        else:
+            self.option = Option()
         self.queue = []
         self.state = Subscription.State.UNSUBSCRIBED
         self.resending = False
-        self.lastReceivedOffset = None
+        self.last_received_offset = None
 
-        resendOptionCount = 0
-        if self.options.get('resend_all', None) is not None:
-            resendOptionCount += 1
-        if self.options.get('resend_from', None) is not None:
-            resendOptionCount += 1
-        if self.options.get('resend_last', None) is not None:
-            resendOptionCount += 1
-        if self.options.get('resend_from_time', None) is not None:
-            resendOptionCount += 1
-        if resendOptionCount > 1:
-            raise ParameterError('Multiple resend options active! Please use only one: %s' % (
-                json.dumps(options)))
+        if self.option.check_resend() > 1:
+            raise ValueError('Multiple resend option active! Please use only one: %s' % self.option)
 
-        if self.options.get('resend_from_time', None) is not None:
-            t = self.options.get('resend_from_time', None)
+        if self.option.resend_from_time is not None:
+            t = self.option.resend_from_time
             if not isinstance(t, (int, float)):
-                raise ParameterError(
+                raise ValueError(
                     '"resend_from_time option" must be an int or float')
 
         def unsubscribed():
-            self.setResending(False)
+            """
+            callback function of unsubscribed event
+            :return:
+            """
+            self.set_resending(False)
+
         self.on('unsubscribed', unsubscribed)
 
         def no_resend(response=None):
-            logger.debug('Sub %s no_resend:%s' % (self.id, response))
-            self.setResending(False)
-            self.checkQueue()
+            """
+            callback function of no_resend event
+            :param response:
+            :return:
+            """
+            logger.debug('Sub %s no_resend:%s' % (self.sub_id, response))
+            self.set_resending(False)
+            self.check_queue()
+
         self.on('no_resend', no_resend)
 
         def resent(response=None):
-            logger.debug('Sub %s resent: %s' % (self.id, response))
-            self.setResending(False)
-            self.checkQueue()
+            """
+            callback function of resent event
+            :param response:
+            :return:
+            """
+            logger.debug('Sub %s resent: %s' % (self.sub_id, response))
+            self.set_resending(False)
+            self.check_queue()
+
         self.on('resent', resent)
 
         def connected():
+            """
+            callback function of connected event
+            :return:
+            """
             pass
+
         self.on('connected', connected)
 
         def disconnected():
-            self.setState(Subscription.State.UNSUBSCRIBED)
-            self.setResending(False)
+            """
+            callback function of disconnected event
+            :return:
+            """
+            self.set_state(Subscription.State.UNSUBSCRIBED)
+            self.set_resending(False)
+
         self.on('disconnected', disconnected)
 
-    def checkForGap(self, previousOffset):
-        return previousOffset is not None and self.lastReceivedOffset is not None and previousOffset > self.lastReceivedOffset
+    def check_for_gap(self, previous_offset):
+        """
+        check wheter some msg is missed
+        :param previous_offset:
+        :return:
+        """
+        return previous_offset is not None \
+            and self.last_received_offset is not None \
+            and previous_offset > self.last_received_offset
 
-    def handleMessage(self, msg, isResend=False):
-
-        if msg.previousOffset is None:
+    def handle_message(self, msg, is_resend=False):
+        """
+        handle the message received from server
+        :param msg:
+        :param is_resend:
+        :return:
+        """
+        if msg.previous_offset is None:
             logger.debug(
-                'handleMessage: prevOffset is null, gap detection is impossible! message no %s' % (msg))
+                'handle_message: prev_offset is null, gap detection is impossible! message no. %s' % msg)
 
-        if self.resending is True and isResend is False:
+        if self.resending is True and is_resend is False:
             self.queue.append(msg)
-        elif self.checkForGap(msg.previousOffset) is True and self.resending is False:
+        elif self.check_for_gap(msg.previous_offset) is True and self.resending is False:
 
             self.queue.append(msg)
 
-            from_index = self.lastReceivedOffset + 1
-            to_index = msg.previousOffset
+            from_index = self.last_received_offset + 1
+            to_index = msg.previous_offset
             logger.debug('Gap detected, requesting resend for stream %s from %d to %d' % (
-                self.streamId, from_index, to_index))
+                self.stream_id, from_index, to_index))
             self.emit('gap', from_index, to_index)
-        elif self.lastReceivedOffset is not None and msg.offset <= self.lastReceivedOffset:
-            logger.debug('Sub %s already recevied message: %s, lastReceivedOffset :%s. Ignoring message.' % (
-                self.id, msg.offset, self.lastReceivedOffset))
+        elif self.last_received_offset is not None and msg.offset <= self.last_received_offset:
+            logger.debug('Sub %s already recevied message: %s, last_received_offset :%s. Ignoring message.' % (
+                self.sub_id, msg.offset, self.last_received_offset))
         else:
-            self.lastReceivedOffset = msg.offset
-            self.callback(msg.getParsedContent(), msg)
-            if msg.isByeMessage():
+            self.last_received_offset = msg.offset
+            self.callback(msg.get_parsed_content(), msg)
+            if msg.is_bye_message():
                 self.emit('done')
 
-    def checkQueue(self):
+    def check_queue(self):
+        """
+        check whether there are data should be sent
+        :return:
+        """
         logger.debug('Attempting to process %s queued messages for stream %s' % (
-            len(self.queue), self.streamId))
+            len(self.queue), self.stream_id))
 
         orig = self.queue
         self.queue = []
 
         for msg in orig:
-            self.handleMessage(msg, False)
+            self.handle_message(msg, False)
 
-    def hasResendOptions(self):
-        return self.options.get('resend_all', False) == True or self.options.get('resend_from', -1) >= 0 or self.options.get('resend_from_time', -1) >= 0 or self.options.get('resend_last', -1) > 0
+    def has_resend_option(self):
+        """
+        check wheter subscription has a resend option
+        :return:
+        """
+        return self.option.check_resend() > 0
 
-    def getEffectiveResendOptions(self):
-        if self.hasReceviedMessage() and self.hasResendOptions() and (self.options.get('resend_all', None) is not None or self.options.get('resend_from', None) is not None or self.options.get('resend_from_time', None) is not None):
-            return {'resend_from': self.lastReceivedOffset + 1}
-        result = {}
+    def has_recevied_message(self):
+        """
+        check wheter subscription has received message
+        :return:
+        """
+        return self.last_received_offset is not None
 
-        for k in self.options.keys():
-            if str.startswith(k, 'resend_'):
-                result[k] = self.options[k]
+    def get_effective_resend_option(self):
+        """
+        return the resend option
+        :return:
+        """
+        if self.has_recevied_message() and self.has_resend_option() and \
+                (self.option.resend_all is not None or
+                 self.option.resend_from is not None or
+                 self.option.resend_from_time is not None):
+            return Option(resend_from=self.last_received_offset + 1)
+        else:
+            return Option(resend_from_time=self.option.resend_from_time,
+                          resend_from=self.option.resend_from,
+                          resend_all=self.option.resend_all,
+                          resend_last=self.option.resend_last,
+                          resend_to=self.option.resend_to)
 
-        return result
-
-    def hasReceviedMessage(self):
-        return self.lastReceivedOffset is not None
-
-    def getState(self):
+    def get_state(self):
+        """
+        return the state of subscription
+        :return:
+        """
         return self.state
 
-    def setState(self, state):
+    def set_state(self, state):
+        """
+        change the state of subscription
+        :param state:
+        :return:
+        """
         logger.debug('Subscription: stream %s state changed %s => %s' %
-                     (self.streamId, self.state, state))
+                     (self.stream_id, self.state, state))
         self.state = state
         self.emit(state)
 
-    def isResending(self):
+    def is_resending(self):
+        """
+        check whether subscription is resending
+        :return:
+        """
         return self.resending
 
-    def setResending(self, v):
+    def set_resending(self, v):
+        """
+        turn on or off the resending state
+        :param v:
+        :return:
+        """
         logger.debug('Subscription: Stream %s resending: %s' %
-                     (self.streamId, v))
+                     (self.stream_id, v))
         self.resending = v
 
-    def handleError(self, err):
-        if isinstance(err, InvalidJsonError) and not self.checkForGap(err.streamMessage.previousOffset):
-            self.lastReceivedOffset = err.streamMessage.offset
+    def handle_error(self, err):
+        """
+        handle the error
+        :param err:
+        :return:
+        """
+        if isinstance(err, InvalidJsonError) and not self.check_for_gap(err.stream_message.previous_offset):
+            self.last_received_offset = err.stream_message.offset
 
         self.emit('error', err)

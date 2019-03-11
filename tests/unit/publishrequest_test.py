@@ -1,3 +1,8 @@
+"""
+test PublishRequest
+"""
+
+
 from streamr.protocol.request import PublishRequest
 import json
 
@@ -17,20 +22,20 @@ msg = {
 result = PublishRequest.deserialize(json.dumps(msg))
 
 assert(isinstance(result, PublishRequest))
-assert(result.streamId == msg['stream'])
-assert(result.apiKey == msg['authKey'])
-assert(result.sessionToken == msg['sessionToken'])
+assert(result.stream_id == msg['stream'])
+assert(result.api_key == msg['authKey'])
+assert(result.session_token == msg['sessionToken'])
 assert(result.content == msg['msg'])
 assert(result.timestamp == msg['ts'])
-assert(result.partitionKey == msg['pkey'])
-assert(result.publisherAddress == msg['addr'])
-assert(result.signatureType == msg['sigtype'])
+assert(result.partition_key == msg['pkey'])
+assert(result.publisher_address == msg['addr'])
+assert(result.signature_type == msg['sigtype'])
 assert(result.signature == msg['sig'])
 
 
 msg = {
     "type": 'publish',
-    "stream": 'streamId123',
+    "stream": 'stream_id123',
     "authKey": 'authKey122',
     "sessionToken": 'sessionToken11',
     "msg": '{}',
@@ -41,7 +46,7 @@ msg = {
     "sig": 'signature',
 }
 
-serial = PublishRequest('streamId123', 'authKey122', 'sessionToken11', {
+serial = PublishRequest('stream_id123', 'authKey122', 'sessionToken11', {
 }, 1533924184016, 'deviceId', 'publisherAddress', 1, 'signature').serialize()
 
 assert(type(serial) == str)
@@ -49,3 +54,5 @@ assert(type(serial) == str)
 dic = json.loads(serial)
 
 assert msg == dic
+
+print('publish request test passed')

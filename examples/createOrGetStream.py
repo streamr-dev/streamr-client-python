@@ -1,25 +1,33 @@
+"""
+an example of create and get stream
+"""
+
+
 from streamr.client.client import Client
+from streamr.util.option import Option
+# To create or get a stream you should create a client object at first
+my_option = Option.get_default_option()
+my_option.api_key = 'your api key'
 
-# To create or get a stream you should create a client at first
-myClient = Client({'apiKey': 'your-api-key'})
+my_client = Client(my_option)
 
-# To create a new stream, you can use 'createStream' or 'getOrCreateStream' with a 'name' parameter
-# Note that createStream is running forcefully.
-# That means you can create two stream with same name but the streamIds are different
+# To create a new stream, you can use 'create_stream' or 'get_or_create_stream' with a 'name' parameter
+# Note that create_stream is running forcefully.
+# That means you can create two stream with same name but the stream_ids are different
 
 
-#stream = client.createStream('stream-test')
+stream1 = my_client.create_stream('stream-test-1')
 
-stream = myClient.getOrCreateStream('stream-test')
+stream2 = my_client.get_or_create_stream('stream-test-2')
 
-# To get a stream, you can use 'getStreamByName' or getStreamById' method
+# To get a stream, you can use 'get_stream_by_name' or get_tream_by_id' method
 
-# getStreamByName will return all the streams with steam name
+# get_stream_by_name will return all the streams with steam name
 # the return is a list object containning the information of all streams
-myClient.getStreamByName('stream-test')
+my_client.get_stream_by_name('stream-test-2')
 
-# get streamById will return the stream with the streamId
+# get streamById will return the stream with the stream_id
 # the return is a dictionary containning the information of the stream
-# Before using this methods, you should replace the streamId with a 32 bytes strings, which
-# can be found in the stream page, also can be obtained using the getStreamByName method.
-myClient.getStreamById('streamId')
+# Before using this methods, you should replace the stream_id with a 32 bytes strings, which
+# can be found in the stream page, also can be obtained using the get_stream_by_name method.
+my_client.get_stream_by_id('stream_id')

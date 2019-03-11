@@ -1,29 +1,31 @@
-#!/usr/bin/python3
+"""
+provide functions to create stream and get stream
+"""
+
+
 import requests
-import json
 import logging
+from streamr.util.constant import RestfullConstant
 
-
-__all__ = ['creating', 'gettingByName', 'gettingById']
-
+__all__ = ['creating', 'getting_by_name', 'getting_by_id']
 
 logger = logging.getLogger(__name__)
 
 
-def creating(streamname, streamdes, sessionToken):
+def creating(stream_name, stream_des, session_token):
     """
     func:
-        Create a Stream using the stream name and describtion.
+        Create a Stream using the stream name and description.
     paras:
-        streamname:  the stream name
-        streamdes:   the stream describtion.
+        stream_name:  the stream name
+        stream_des:   the stream description.
     return:
         status_code: True means creating a stream successfully, while None means creating it unsuccessfully.
     """
-    url = 'https://www.streamr.com/api/v1/streams'
-    paras = {"Authorization": "Bearer %s" % sessionToken}
-    body = ('{"name": %s, "description": %s, "config": {"fields":[]}}' % (
-        streamname, streamdes))
+
+    url = RestfullConstant.CREATE_ADDR
+    paras = {RestfullConstant.PARAS_KEY: RestfullConstant.PARAS_VALUE % session_token}
+    body = RestfullConstant.CREATE_BODY % (stream_name, stream_des)
     logger.info("The creating request url is: %s, the paras are: %s, the body is: %s" % (
         url, paras, body))
     try:
@@ -35,24 +37,24 @@ def creating(streamname, streamdes, sessionToken):
             logger.error("Fail to Create a Stream. The Status code: %s" %
                          req.status_code)
             return None
-    except:
+    except requests.RequestException:
         import traceback
         logger.error("Fail to Create a Stream.")
         traceback.print_exc()
         return None
 
 
-def gettingById(streamid, sessionToken):
+def getting_by_id(stream_id, session_token):
     """
     func:
-        Getting a Stream by the stream id
+        Getting a Stream by the stream sub_id
     paras:
-        streamid: The stream id
+        stream_id: The stream sub_id
     return:
         req.json(): The request responses in json type.
     """
-    url = 'https://www.streamr.com/api/v1/streams/' + streamid
-    paras = {"Authorization": "Bearer %s" % sessionToken}
+    url = RestfullConstant.GET_BY_ID_ADDR + stream_id
+    paras = {RestfullConstant.PARAS_KEY: RestfullConstant.PARAS_VALUE % session_token}
     logger.info(
         "The getting_by_id request url is: %s, the paras are: %s" % (url, paras))
     try:
@@ -65,25 +67,25 @@ def gettingById(streamid, sessionToken):
             logger.error(
                 "Fail to Get a Stream using its ID. The Status code: %s" % req.status_code)
             return None
-    except:
+    except requests.RequestException:
         import traceback
         logger.error("Fail to Get a Stream using its ID.")
         traceback.print_exc()
         return None
 
 
-def gettingByName(streamname, sessionToken):
+def getting_by_name(stream_name, session_token):
     """
     func:
         Getting a Stream by the stream name.
         NOTE: "Case Insensitive"
     paras:
-        streamname: The stream name
+        stream_name: The stream name
     return:
         req.text: The request responses in list type.
     """
-    url = 'https://www.streamr.com/api/v1/streams?name=' + streamname
-    paras = {"Authorization": "Bearer %s" % sessionToken}
+    url = RestfullConstant.GET_BY_NAME_ADDR + stream_name
+    paras = {RestfullConstant.PARAS_KEY: RestfullConstant.PARAS_VALUE % session_token}
     logger.info(
         "The getting_by_name request url is: %s, the paras are: %s" % (url, paras))
     try:
@@ -96,7 +98,7 @@ def gettingByName(streamname, sessionToken):
             logger.error(
                 "Fail to Get a Stream using its name. The Status code: %s" % req.status_code)
             return None
-    except:
+    except requests.RequestException:
         import traceback
         logger.error("Fail to Get a Stream using its name.")
         traceback.print_exc()
