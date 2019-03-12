@@ -9,7 +9,6 @@ from streamr.util.option import Option
 
 my_option = Option.get_default_option()
 my_option.api_key = 'your-api-Key'
-
 my_client = Client(my_option)
 
 # you can also change the option value like this

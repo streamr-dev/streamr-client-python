@@ -23,11 +23,11 @@ stream2 = my_client.get_or_create_stream('stream-test-2')
 # To get a stream, you can use 'get_stream_by_name' or get_tream_by_id' method
 
 # get_stream_by_name will return all the streams with steam name
-# the return is a list object containning the information of all streams
+# the return is a list object containing the information of all streams
 stream3 = my_client.get_stream_by_name('stream-test-2')
 
-# get streamById will return the stream with the stream_id
-# the return is a dictionary containning the information of the stream
+# get stream by id will return the stream with the stream_id
+# the return is a dictionary containing the information of the stream
 # Before using this methods, you should replace the stream_id with a 32 bytes strings, which
 # can be found in the stream page, also can be obtained using the get_stream_by_name method.
 stream_id = stream2[0]['id']

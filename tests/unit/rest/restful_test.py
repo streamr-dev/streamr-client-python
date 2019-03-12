@@ -44,7 +44,8 @@ def test_get_stream_by_id(s_id, st):
     assert isinstance(id_result_1, dict)
     assert id_result_1['id'] == s_id
 
-    print('test getting a stream by a invalid id. you should see "Fail to Get a Stream using its ID: not_existed. The Status code : 404"')
+    print('test getting a stream by a invalid id. you should see '
+          '"Fail to Get a Stream using its ID: not_existed. The Status code : 404"')
     id_result_2 = getting_by_id('not_existed', st)
     assert id_result_2 is None
 

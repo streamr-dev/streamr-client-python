@@ -20,7 +20,7 @@ This module is test on Python 3.6+
 ### Tests
 You can test the integration functions using the following files.
 
-`client_test.py`: If you don't have the jupyter library, you can run this file to test.
+`client_test.py`:  you can run this file to test.
 
 ### Usage
 

@@ -6,17 +6,17 @@ an example of connect and publish
 from streamr.client.client import Client
 from streamr.util.option import Option
 import logging
+import time
 
-
+logging.basicConfig(level=logging.INFO)
 my_option = Option.get_default_option()
 my_option.auto_disconnect = False
 my_option.auto_connect = False
 my_option.api_key = 'your-api-key'
-
 my_client = Client(my_option)
 
 # To connect to the server, you can use connect function
-# This function returns immediately and you can query the state by is_connected funcition
+# This function returns immediately and you can query the state by is_connected function
 my_client.connect()
 
 while my_client.is_connected() is False:
@@ -50,7 +50,7 @@ def callback(parsed_msg, msg):
     :param msg: msg object
     :return:
     """
-    logging.info('received message. Content : %s, stream_id :%s stream_parition : %s'
+    logging.info('received message. Content : %s, stream_id :%s stream_partition : %s'
                  % (parsed_msg, msg.stream_id, msg.stream_partition))
 
 
@@ -59,10 +59,13 @@ subscrip = my_client.subscribe(stream_id, callback)
 
 # To publish data you can use publish function
 # Two parameters are needed:
-# 1. 'stream-sub_id' as a string object or a object containning the 'stream_id' attribute
+# 1. 'stream_id' as a string object or a object containing the 'stream_id' attribute
 # 2. data as a dictionary object
 
 data = {"name": 'google', "age": 19}
 
 my_client.publish(subscrip, data)
 
+# wait 5 seconds and disconnect
+time.sleep(5)
+my_client.disconnect()
