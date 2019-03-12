@@ -277,8 +277,8 @@ class Client(Event):
         """
         if hasattr(stream, 'stream_id'):
             stream_id = stream.stream_id
-        elif isinstance(stream, dict) and 'stream_id' in stream.keys():
-            stream_id = stream['stream_id']
+        elif isinstance(stream, dict) and ('stream_id' in stream.keys() or 'stream' in stream.keys()):
+            stream_id = stream.get('stream', None) or stream.get('stream_id', None)
         elif isinstance(stream, str):
             stream_id = stream
         else:
@@ -468,7 +468,7 @@ class Client(Event):
         create stream by given stream_name
         :param stream_name:
         :param stream_des:
-        :return: stream object
+        :return: stream dict
         """
         stream = creating(stream_name, stream_des, self.session_token)
         return stream
@@ -477,7 +477,7 @@ class Client(Event):
         """
         get stream by stream_name
         :param stream_name: str
-        :return: stream object
+        :return: stream list
         """
         return getting_by_name(stream_name, self.session_token)
 
@@ -485,7 +485,7 @@ class Client(Event):
         """
         get stream by stream id
         :param stream_id: str
-        :return: stream object
+        :return: stream dict
         """
         return getting_by_id(stream_id, self.session_token)
 
@@ -493,10 +493,11 @@ class Client(Event):
         """
         create stream or get a stream
         :param stream_name: str
-        :return: stream object
+        :return: stream list
         """
         stream = self.get_stream_by_name(stream_name)
-        if stream is None or (isinstance(stream, list) and len(stream) == 0):
-            return self.create_stream(stream_name)
+        if stream is None:
+            logger.error('stream: %s is not existed, creating...' % stream_name)
+            return [self.create_stream(stream_name)]
         else:
             return stream

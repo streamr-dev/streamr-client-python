@@ -190,4 +190,4 @@ if __name__ == "__main__":
     test_to_ojbect_compact_is_false()
     test_to_ojbect_compact_is_true()
     test_unsupported_version()
-    print('test success')
+    print('streamMessage test passed')

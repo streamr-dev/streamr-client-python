@@ -29,7 +29,7 @@ def creating(stream_name, stream_des, session_token):
     logger.info("The creating request url is: %s, the paras are: %s, the body is: %s" % (
         url, paras, body))
     try:
-        req = requests.post(url, headers=paras, data=body)
+        req = requests.post(url, headers=paras, data=body, verify=True)
         if req.status_code == 200 or req.status_code == 201:
             logger.info("Create a Stream successfully.")
             return req.json()
@@ -58,18 +58,18 @@ def getting_by_id(stream_id, session_token):
     logger.info(
         "The getting_by_id request url is: %s, the paras are: %s" % (url, paras))
     try:
-        req = requests.get(url, headers=paras)
+        req = requests.get(url, headers=paras, verify=True)
         if req.status_code == 200 or req.status_code == 201:
             logger.info(
                 "Getting a Stream using its ID successfully, and the stream is: %s" % req.json())
             return req.json()
         else:
             logger.error(
-                "Fail to Get a Stream using its ID. The Status code: %s" % req.status_code)
+                "Fail to Get a Stream using its ID : %s . The Status code: %s" % (stream_id, req.status_code))
             return None
     except requests.RequestException:
         import traceback
-        logger.error("Fail to Get a Stream using its ID.")
+        logger.error("Fail to Get a Stream using its ID : %s " % stream_id)
         traceback.print_exc()
         return None
 
@@ -89,17 +89,22 @@ def getting_by_name(stream_name, session_token):
     logger.info(
         "The getting_by_name request url is: %s, the paras are: %s" % (url, paras))
     try:
-        req = requests.get(url, headers=paras)
+        req = requests.get(url, headers=paras, verify=True)
         if req.status_code == 200 or req.status_code == 201:
-            logger.info(
-                "Getting a Stream using its name successfully, and the stream is: %s" % req.text)
-            return req.json()
+            if len(req.json()) == 0:
+                logger.error(
+                     "Fail to Get a Stream using its name: %s" % stream_name)
+                return None
+            else:
+                logger.info(
+                    "Getting a Stream using its name successfully, and the stream is: %s" % req.text)
+                return req.json()
         else:
             logger.error(
                 "Fail to Get a Stream using its name. The Status code: %s" % req.status_code)
             return None
     except requests.RequestException:
         import traceback
-        logger.error("Fail to Get a Stream using its name.")
+        logger.error("Fail to Get a Stream using its name: %s " % stream_name)
         traceback.print_exc()
         return None

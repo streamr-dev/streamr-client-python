@@ -1,55 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="199a65ca-5aac-4268-a1c1-ccb87dc4b321" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/streamr/client/util/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/streamr/protocol/payload.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/streamr/protocol/util/meta.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/streamr/util/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/streamr/util/compare.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/streamr/util/constant.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/streamr/util/option.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/unit/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/unit/restful_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" afterPath="$PROJECT_DIR$/LICENSE" afterDir="false" />
+    <list default="true" id="f8f5adda-e307-49d6-b916-ae714474e46d" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/tests/unit/rest/restful_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/streamr-client-python.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/examples/connectAndPublish.py" beforeDir="false" afterPath="$PROJECT_DIR$/examples/connectAndPublish.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/createClient.py" beforeDir="false" afterPath="$PROJECT_DIR$/examples/createClient.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/examples/createOrGetStream.py" beforeDir="false" afterPath="$PROJECT_DIR$/examples/createOrGetStream.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/streamr/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/streamr/client/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/client/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/streamr/client/client.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/client/client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/client/connection.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/client/connection.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/client/errors/error.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/client/errors/error.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/streamr/client/event.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/client/event.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/streamr/client/subscription.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/client/subscription.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/streamr/client/util/__init__.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/streamr/client/util/websock.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/client/util/websock.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/protocol/errors/error.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/protocol/errors/error.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/protocol/payloads.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/protocol/request.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/protocol/request.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/protocol/response.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/protocol/response.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/protocol/utils/meta.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/protocol/utils/parser.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/protocol/util/parser.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/rest/restful.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/rest/stream.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/streamr/protocol/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/protocol/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/streamr/rest/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/rest/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/streamr/rest/session.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/rest/session.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/env" beforeDir="false" afterPath="$PROJECT_DIR$/tests/env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/intergration/client_test.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/tests/intergration/client_test.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/intergration/client_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/intergration/client_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/client_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/client_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/errormessage_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/errormessage_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/publishrequest_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/publishrequest_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/request_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/request_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/resendRequest_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/resendRequest_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/resendResponse_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/resendResponse_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/response_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/response_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/streamAndPartition_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/streamAndPartition_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/streamMessage_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/streamMessage_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/subscribeRequest_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/subscribeRequest_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/subscription_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/subscription_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/unsubscribeRequest_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/unsubscribeRequest_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/streamr/rest/stream.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/rest/stream.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/streamr/util/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/util/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/intergration/client_test.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/client_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/streamr/client_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/errormessage_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/protocol/errormessage_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/publishrequest_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/protocol/publishrequest_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/request_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/protocol/request_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/resendRequest_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/protocol/resendRequest_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/resendResponse_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/protocol/resendResponse_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/response_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/protocol/response_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/restful_test.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/streamAndPartition_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/protocol/streamAndPartition_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/streamMessage_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/protocol/streamMessage_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/subscribeRequest_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/protocol/subscribeRequest_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/subscription_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/streamr/subscription_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/unit/unsubscribeRequest_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/protocol/unsubscribeRequest_test.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -57,79 +48,18 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/streamr_client_python$restful_test.coverage" NAME="restful_test Coverage Results" MODIFIED="1552009457811" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/unit" />
-    <SUITE FILE_PATH="coverage/streamr_client_python$option.coverage" NAME="option Coverage Results" MODIFIED="1551981110144" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/streamr/client" />
-  </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/streamr/client/client.py">
+        <entry file="file://$PROJECT_DIR$/tests/__init__.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="214">
-              <caret line="433" column="25" lean-forward="true" selection-start-line="433" selection-start-column="25" selection-end-line="433" selection-end-column="25" />
+            <state relative-caret-position="15">
+              <caret line="1" column="5" selection-start-line="1" selection-start-column="5" selection-end-line="1" selection-end-column="5" />
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
-  </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Python Script" />
-      </list>
-    </option>
-  </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>on('gap</find>
-      <find>class</find>
-      <find>get_effective</find>
-      <find>ResendRequest</find>
-      <find>has_recevied_message</find>
-      <find>__request_resend</find>
-      <find>stream</find>
-      <find>__resend_and_subscribe</find>
-      <find>Option</find>
-      <find>option.</find>
-      <find>queue</find>
-      <find>publish_queue</find>
-      <find>has_resend</find>
-      <find>option</find>
-      <find>deserialize</find>
-      <find>resend</find>
-      <find>p</find>
-      <find>to_object</find>
-      <find>subscribe(</find>
-      <find>callback</find>
-      <find>handle_message</find>
-      <find>websock</find>
-      <find>mywebsock</find>
-      <find>self.sock</find>
-      <find>close(</find>
-      <find>connect(</find>
-      <find>self.socket</find>
-      <find>def close(</find>
-      <find>run_forever</find>
-      <find>connection</find>
-    </findStrings>
-    <replaceStrings>
-      <replace>stream_name</replace>
-      <replace>sub_id</replace>
-      <replace>.sub_id</replace>
-      <replace>api_key</replace>
-      <replace>stream_id</replace>
-      <replace />
-      <replace>request_type</replace>
-      <replace>option</replace>
-      <replace>resend_option</replace>
-      <replace>stream_partition</replace>
-    </replaceStrings>
-    <dirStrings>
-      <dir>$PROJECT_DIR$/tests/intergration</dir>
-      <dir>$PROJECT_DIR$</dir>
-    </dirStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -137,63 +67,24 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/streamr/protocol/utils/parser.py" />
-        <option value="$PROJECT_DIR$/streamr/protocol/utils/meta.py" />
-        <option value="$PROJECT_DIR$/tests/intergration/client_test.ipynb" />
-        <option value="$PROJECT_DIR$/streamr/client/clientoption.py" />
-        <option value="$PROJECT_DIR$/streamr/rest/restful.py" />
-        <option value="$PROJECT_DIR$/streamr/protocol/utils/constant.py" />
-        <option value="$PROJECT_DIR$/streamr/protocol/payloads.py" />
-        <option value="$PROJECT_DIR$/streamr/client/util/constant.py" />
-        <option value="$PROJECT_DIR$/streamr/protocol/util/constant.py" />
-        <option value="$PROJECT_DIR$/streamr/protocol/compare.py" />
-        <option value="$PROJECT_DIR$/streamr/client/option.py" />
-        <option value="$PROJECT_DIR$/streamr/rest/constant.py" />
-        <option value="$PROJECT_DIR$/streamr/protocol/util/meta.py" />
-        <option value="$PROJECT_DIR$/tests/unit/restful_test.py" />
-        <option value="$PROJECT_DIR$/streamr/util/compare.py" />
-        <option value="$PROJECT_DIR$/streamr/rest/stream.py" />
-        <option value="$PROJECT_DIR$/streamr/rest/session.py" />
-        <option value="$PROJECT_DIR$/streamr/protocol/errors/error.py" />
-        <option value="$PROJECT_DIR$/streamr/error/error.py" />
-        <option value="$PROJECT_DIR$/streamr/protocol/util/parser.py" />
-        <option value="$PROJECT_DIR$/tests/unit/errormessage_test.py" />
-        <option value="$PROJECT_DIR$/tests/unit/publishrequest_test.py" />
-        <option value="$PROJECT_DIR$/tests/unit/request_test.py" />
-        <option value="$PROJECT_DIR$/streamr/protocol/response.py" />
-        <option value="$PROJECT_DIR$/streamr/client/errors/error.py" />
-        <option value="$PROJECT_DIR$/tests/unit/passed/response_test.py" />
-        <option value="$PROJECT_DIR$/streamr/protocol/payload.py" />
-        <option value="$PROJECT_DIR$/streamr/util/constant.py" />
-        <option value="$PROJECT_DIR$/streamr/client/client.py" />
-        <option value="$PROJECT_DIR$/streamr/protocol/request.py" />
-        <option value="$PROJECT_DIR$/tests/unit/resendRequest_test.py" />
-        <option value="$PROJECT_DIR$/streamr/util/option.py" />
-        <option value="$PROJECT_DIR$/tests/unit/client_test.py" />
         <option value="$PROJECT_DIR$/examples/connectAndPublish.py" />
-        <option value="$PROJECT_DIR$/streamr/client/connection.py" />
-        <option value="$PROJECT_DIR$/examples/createClient.py" />
-        <option value="$PROJECT_DIR$/examples/createOrGetStream.py" />
-        <option value="$PROJECT_DIR$/streamr/client/event.py" />
-        <option value="$PROJECT_DIR$/tests/unit/resendResponse_test.py" />
-        <option value="$PROJECT_DIR$/tests/unit/response_test.py" />
+        <option value="$PROJECT_DIR$/tests/unit/rest/restful_test.py" />
+        <option value="$PROJECT_DIR$/streamr/rest/session.py" />
         <option value="$PROJECT_DIR$/setup.py" />
-        <option value="$PROJECT_DIR$/tests/unit/streamAndPartition_test.py" />
-        <option value="$PROJECT_DIR$/tests/unit/streamMessage_test.py" />
-        <option value="$PROJECT_DIR$/tests/unit/subscribeRequest_test.py" />
-        <option value="$PROJECT_DIR$/tests/unit/subscription_test.py" />
-        <option value="$PROJECT_DIR$/tests/unit/unsubscribeRequest_test.py" />
-        <option value="$PROJECT_DIR$/tests/intergration/client_test.py" />
-        <option value="$PROJECT_DIR$/tests/config.py" />
-        <option value="$PROJECT_DIR$/streamr/client/subscription.py" />
-        <option value="$PROJECT_DIR$/streamr/client/util/websock.py" />
+        <option value="$PROJECT_DIR$/streamr/rest/stream.py" />
+        <option value="$PROJECT_DIR$/streamr/__init__.py" />
+        <option value="$PROJECT_DIR$/streamr/util/__init__.py" />
+        <option value="$PROJECT_DIR$/streamr/rest/__init__.py" />
+        <option value="$PROJECT_DIR$/streamr/protocol/__init__.py" />
+        <option value="$PROJECT_DIR$/streamr/client/__init__.py" />
+        <option value="$PROJECT_DIR$/tests/__init__.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
+    <option name="x" value="4" />
     <option name="y" value="23" />
-    <option name="width" value="1240" />
+    <option name="width" value="1239" />
     <option name="height" value="777" />
   </component>
   <component name="ProjectView">
@@ -201,6 +92,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -211,13 +103,12 @@
             <path>
               <item name="streamr-client-python" type="b2602c69:ProjectViewProjectNode" />
               <item name="streamr-client-python" type="462c0819:PsiDirectoryNode" />
-              <item name="examples" type="462c0819:PsiDirectoryNode" />
+              <item name="tests" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -226,15 +117,6 @@
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
-  </component>
-  <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/tests/unit" />
-      <recent name="$PROJECT_DIR$/tests/unit/passed" />
-      <recent name="$PROJECT_DIR$/streamr/util" />
-      <recent name="$PROJECT_DIR$/streamr" />
-      <recent name="$PROJECT_DIR$/streamr/client/util" />
-    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -248,100 +130,45 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.restful_test">
-    <configuration name="option" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="streamr-client-python" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/streamr/client" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/streamr/util/option.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="restful_test" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="streamr-client-python" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/unit" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tests/unit/restful_test.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Python.restful_test" />
-        <item itemvalue="Python.option" />
-      </list>
-    </recent_temporary>
-  </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="199a65ca-5aac-4268-a1c1-ccb87dc4b321" name="Default Changelist" comment="" />
-      <created>1551927669556</created>
+      <changelist id="f8f5adda-e307-49d6-b916-ae714474e46d" name="Default Changelist" comment="" />
+      <created>1552320635584</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1551927669556</updated>
-      <workItem from="1551927673565" duration="14600000" />
-      <workItem from="1551947367522" duration="33007000" />
-      <workItem from="1552009005275" duration="42362000" />
-      <workItem from="1552221757741" duration="12993000" />
-      <workItem from="1552270599473" duration="4605000" />
+      <updated>1552320635584</updated>
+      <workItem from="1552320640022" duration="109000" />
+      <workItem from="1552371889404" duration="1639000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="107567000" />
+    <option name="totallyTimeSpent" value="1748000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1240" height="777" extended-state="6" />
+    <frame x="4" y="23" width="1239" height="777" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2312187" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25396827" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.329927" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.329927" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="8" weight="0.329927" />
+      <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
-      <window_info active="true" anchor="bottom" id="Inspection Results" order="10" visible="true" weight="0.34890512" />
-      <window_info anchor="bottom" id="Terminal" order="11" weight="0.35474452" />
-      <window_info anchor="bottom" id="Event Log" order="12" side_tool="true" weight="0.329927" />
-      <window_info anchor="bottom" id="Python Console" order="13" weight="0.329927" />
+      <window_info anchor="bottom" id="Inspection Results" order="10" visible="true" weight="0.329927" />
+      <window_info anchor="bottom" id="Terminal" order="11" />
+      <window_info anchor="bottom" id="Event Log" order="12" side_tool="true" />
+      <window_info anchor="bottom" id="Python Console" order="13" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -352,423 +179,92 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/tests/unit/resendRequest_test.py</url>
-          <line>5</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
-  </component>
   <component name="editorHistoryManager">
-    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/json/__init__.py">
+    <entry file="file://$PROJECT_DIR$/setup.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="143">
-          <caret line="230" selection-start-line="230" selection-end-line="230" />
+        <state relative-caret-position="180">
+          <caret line="12" column="14" selection-start-line="12" selection-start-column="14" selection-end-line="12" selection-end-column="14" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
+    <entry file="file://$PROJECT_DIR$/tests/unit/rest/restful_test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2561">
-          <caret line="125" column="15" lean-forward="true" selection-start-line="125" selection-start-column="15" selection-end-line="125" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/__init__.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/json/decoder.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="251">
-          <caret line="356" selection-start-line="356" selection-end-line="356" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/requests/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6060">
-          <caret line="437" selection-start-line="437" selection-end-line="437" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/Library/Caches/PyCharm2018.3/python_stubs/526950272/builtins.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="197">
-          <caret line="734" column="8" selection-start-line="734" selection-start-column="8" selection-end-line="734" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/streamr/util/__init__.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/streamr/__init__.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/streamr/error/error.py" />
-    <entry file="file://$PROJECT_DIR$/streamr/rest/session.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-14">
-          <caret line="1" column="4" selection-start-line="1" selection-start-column="3" selection-end-line="1" selection-end-column="4" />
-          <folding>
-            <element signature="e#49#64#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/unit/restful_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="348">
-          <caret line="26" lean-forward="true" selection-start-line="26" selection-end-line="26" />
-          <folding>
-            <element signature="e#23#84#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/streamr/protocol/util/parser.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="540">
-          <caret line="36" lean-forward="true" selection-start-line="36" selection-end-line="36" />
-          <folding>
-            <element signature="e#61#72#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/streamr/protocol/util/meta.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="294">
-          <caret line="51" column="24" selection-start-line="51" selection-start-column="24" selection-end-line="51" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/websocket/_url.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="130">
-          <caret line="39" selection-start-line="39" selection-end-line="39" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/websocket/_http.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="138">
-          <caret line="106" selection-start-line="106" selection-end-line="106" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/websocket/_core.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="138">
-          <caret line="219" selection-start-line="219" selection-end-line="219" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/streamr/util/compare.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="18" lean-forward="true" selection-start-line="18" selection-end-line="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/streamr/rest/stream.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="10" lean-forward="true" selection-start-line="10" selection-end-line="10" />
-          <folding>
-            <element signature="e#60#75#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/streamr/client/errors/error.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" column="2" selection-start-line="1" selection-start-column="2" selection-end-line="1" selection-end-column="2" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/streamr/protocol/errors/error.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-264">
-          <caret line="11" column="7" lean-forward="true" selection-start-line="11" selection-start-column="7" selection-end-line="11" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/streamr/protocol/payload.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="122">
-          <caret line="151" column="25" selection-start-line="151" selection-start-column="25" selection-end-line="151" selection-end-column="25" />
-          <folding>
-            <element signature="e#47#58#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/streamr/protocol/response.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="122">
-          <caret line="229" column="27" selection-start-line="229" selection-start-column="27" selection-end-line="229" selection-end-column="27" />
-          <folding>
-            <element signature="e#48#59#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/unit/errormessage_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="14" column="43" lean-forward="true" selection-start-line="14" selection-start-column="43" selection-end-line="14" selection-end-column="43" />
-          <folding>
-            <element signature="e#35#84#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/streamr/util/constant.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-399">
-          <caret line="49" column="16" lean-forward="true" selection-start-line="49" selection-start-column="16" selection-end-line="49" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/unit/request_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="12" column="12" selection-start-line="12" selection-start-column="5" selection-end-line="12" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/unit/publishrequest_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="735">
-          <caret line="49" column="34" lean-forward="true" selection-start-line="49" selection-start-column="34" selection-end-line="49" selection-end-column="34" />
-          <folding>
-            <element signature="e#30#81#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/streamr/protocol/request.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="151">
-          <caret line="38" column="54" lean-forward="true" selection-start-line="38" selection-start-column="54" selection-end-line="38" selection-end-column="54" />
-          <folding>
-            <element signature="e#48#59#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/runpy.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="138">
-          <caret line="84" selection-start-line="84" selection-end-line="84" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/env">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="56" selection-start-column="12" selection-end-column="56" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mylog.log">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3120">
-          <caret line="208" lean-forward="true" selection-start-line="208" selection-end-line="208" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/unit/client_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-818">
-          <caret line="46" column="12" selection-start-line="46" selection-start-column="12" selection-end-line="46" selection-end-column="12" />
+        <state relative-caret-position="319">
+          <caret line="54" lean-forward="true" selection-start-line="54" selection-end-line="54" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/examples/connectAndPublish.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="37" column="57" selection-start-line="37" selection-start-column="57" selection-end-line="37" selection-end-column="57" />
-          <folding>
-            <element signature="e#0#40#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="139">
+          <caret line="56" selection-start-line="56" selection-end-line="56" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/setup.py">
+    <entry file="file://$PROJECT_DIR$/streamr/util/compare.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/streamr/util/constant.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1569" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/streamr/rest/session.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="143">
+          <caret line="32" column="59" selection-start-line="32" selection-start-column="59" selection-end-line="32" selection-end-column="59" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/streamr/protocol/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="3" selection-start-line="3" selection-end-line="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/streamr/client/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="3" column="63" selection-start-line="3" selection-start-column="63" selection-end-line="3" selection-end-column="63" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/streamr/client/util/__init__.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/streamr/rest/stream.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="401">
+          <caret line="72" column="28" selection-start-line="72" selection-start-column="28" selection-end-line="72" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/streamr/rest/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="3" column="39" lean-forward="true" selection-start-line="3" selection-start-column="39" selection-end-line="3" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/streamr/util/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="3" lean-forward="true" selection-start-line="4" selection-start-column="3" selection-end-line="4" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/streamr/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="15">
-          <caret line="1" column="10" selection-start-line="1" selection-start-column="10" selection-end-line="1" selection-end-column="10" />
+          <caret line="1" column="14" selection-start-line="1" selection-start-column="14" selection-end-line="1" selection-end-column="14" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/unit/subscribeRequest_test.py">
+    <entry file="file://$PROJECT_DIR$/tests/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="15">
-          <caret line="1" column="27" selection-start-line="1" selection-start-column="27" selection-end-line="1" selection-end-column="27" />
-          <folding>
-            <element signature="e#8#61#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/unit/streamMessage_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" column="24" selection-start-line="1" selection-start-column="24" selection-end-line="1" selection-end-column="24" />
-          <folding>
-            <element signature="e#0#50#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/unit/streamAndPartition_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" column="29" selection-start-line="1" selection-start-column="29" selection-end-line="1" selection-end-column="29" />
-          <folding>
-            <element signature="e#0#55#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/unit/response_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" column="25" selection-start-line="1" selection-start-column="25" selection-end-line="1" selection-end-column="25" />
-          <folding>
-            <element signature="e#0#230#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/unit/resendResponse_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-189">
-          <caret line="1" column="29" selection-start-line="1" selection-start-column="29" selection-end-line="1" selection-end-column="29" />
-          <folding>
-            <element signature="e#0#58#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/streamr/client/event.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="201">
-          <caret line="61" column="21" selection-start-line="61" selection-start-column="21" selection-end-line="61" selection-end-column="21" />
-          <folding>
-            <element signature="e#0#35#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/examples/createClient.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" column="27" selection-start-line="1" selection-start-column="27" selection-end-line="1" selection-end-column="27" />
-          <folding>
-            <element signature="e#0#40#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/unit/subscription_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="268">
-          <caret line="267" column="24" lean-forward="true" selection-start-line="267" selection-start-column="24" selection-end-line="267" selection-end-column="24" />
-          <folding>
-            <element signature="e#0#52#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/unit/resendRequest_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="201">
-          <caret line="38" lean-forward="true" selection-start-line="38" selection-end-line="38" />
-          <folding>
-            <element signature="e#29#79#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/config.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" column="30" selection-start-line="1" selection-start-column="30" selection-end-line="1" selection-end-column="30" />
-          <folding>
-            <element signature="e#1#25#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/intergration/client_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" column="11" selection-start-line="1" selection-start-column="11" selection-end-line="1" selection-end-column="11" />
-          <folding>
-            <element signature="e#1#15#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/unit/unsubscribeRequest_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" column="23" selection-start-line="1" selection-start-column="23" selection-end-line="1" selection-end-column="23" />
-          <folding>
-            <element signature="e#0#55#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/streamr/util/option.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="214">
-          <caret line="129" lean-forward="true" selection-start-line="129" selection-end-line="129" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/streamr/client/subscription.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="179">
-          <caret line="135" lean-forward="true" selection-start-line="135" selection-end-line="135" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/examples/createOrGetStream.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="6" column="38" lean-forward="true" selection-start-line="6" selection-start-column="38" selection-end-line="6" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/streamr/client/connection.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="233">
-          <caret line="140" column="27" selection-start-line="140" selection-start-column="16" selection-end-line="140" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/streamr/client/util/websock.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="30" lean-forward="true" selection-start-line="5" selection-start-column="30" selection-end-line="5" selection-end-column="30" />
-          <folding>
-            <element signature="e#52#66#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/streamr/client/client.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="214">
-          <caret line="433" column="25" lean-forward="true" selection-start-line="433" selection-start-column="25" selection-end-line="433" selection-end-column="25" />
+          <caret line="1" column="5" selection-start-line="1" selection-start-column="5" selection-end-line="1" selection-end-column="5" />
         </state>
       </provider>
     </entry>

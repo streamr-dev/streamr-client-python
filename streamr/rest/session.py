@@ -30,7 +30,7 @@ def get_session_token_by_api_key(api_key):
     logger.debug("The creating request url is: %s, the paras are: %s, the body is: %s" % (
         url, paras, body))
     try:
-        req = requests.post(url, headers=paras, data=body)
+        req = requests.post(url, headers=paras, data=body, verify=True)
         if req.status_code == 200 or req.status_code == 201:
             logger.info("Get a Session Token successfully. %s" % req.json())
             session_token = req.json()[RestfullConstant.SESSION_TOKEN]

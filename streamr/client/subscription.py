@@ -143,7 +143,7 @@ class Subscription(Event):
         """
         if msg.previous_offset is None:
             logger.debug(
-                'handle_message: prev_offset is null, gap detection is impossible! message no. %s' % msg)
+                'handle_message: prev_offset is null, gap detection is impossible! message no. %s' % msg.serialize())
 
         if self.resending is True and is_resend is False:
             self.queue.append(msg)

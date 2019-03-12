@@ -117,4 +117,4 @@ serialized = Response.deserialize(examplesByType['7']).serialize()
 assert type(serialized) == str
 assert examplesByType['7'] == json.loads(serialized)
 
-print('responsst test passed')
+print('response test passed')

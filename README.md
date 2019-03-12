@@ -30,30 +30,29 @@ Here are some quick examples.
 
 ```
 from streamr.client.client import Client
-
+from streamr.util.option import Option
 ```
 
 #### Creating a StreamrClient instance with given option
 
 ```
-option = {'api_key': 'your-api_key', 'autoConnect': False, 'autoDisconnect': False}
-
+option = Option.get_default_option()
+option.api_key = 'your-api-key'
+option.auto_connect = False
+option.auto_disconnect = False
 client = Client(option)
-
-
 ```
 #### getting or creating a stream by name
 
 ```
 stream = client.get_or_create_stream('stream-test')
 
-
 ```
 
 #### gettting the stream id
 
 ```
-stream_id = stream['id']
+stream_id = stream[0]['id']
 
 ```
 
@@ -65,7 +64,7 @@ stream = client.get_stream_by_name('stream-test')
 
 ```
 ```
-stream = client.get_tream_by_id(stream_id)
+stream = client.get_stream_by_id(stream_id)
 
 ``` 
 
@@ -80,8 +79,8 @@ print(client.connection.state)
 
 ```
 client.connect()
-while(client.connection.state != client.connection.State.Connected):
-	pass
+while(not client.is_connected()):
+    pass
 	
 ```
 
@@ -90,7 +89,7 @@ while(client.connection.state != client.connection.State.Connected):
 def callback(msg,_):
 	print('message received . The Cotent is : %s'%(msg))
 
-subscription = client.subscribe({'stream':stream_id}, callback)
+subscription = client.subscribe(stream_id, callback)
 
 ```
 

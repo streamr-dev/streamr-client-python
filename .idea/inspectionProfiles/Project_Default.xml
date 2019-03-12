@@ -20,7 +20,7 @@
     <inspection_tool class="PyClassHasNoInitInspection" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="PyClassicStyleClassInspection" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="PyComparisonWithNoneInspection" enabled="true" level="ERROR" enabled_by_default="true" />
-    <inspection_tool class="PyCompatibilityInspection" enabled="false" level="ERROR" enabled_by_default="false">
+    <inspection_tool class="PyCompatibilityInspection" enabled="true" level="ERROR" enabled_by_default="true">
       <option name="ourVersions">
         <value>
           <list size="2">

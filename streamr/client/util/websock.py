@@ -219,8 +219,6 @@ class MyWebSocket(object):
             teardown(self.frame)
         except (Exception, KeyboardInterrupt, SystemExit) as e:
             self._callback(self.on_error, e)
-            import traceback
-            traceback.print_exc()
             teardown()
 
     def _get_close_args(self, data):
