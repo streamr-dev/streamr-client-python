@@ -65,7 +65,7 @@ def getting_by_id(stream_id, session_token):
             return req.json()
         else:
             logger.error(
-                "Fail to Get a Stream using its ID : %s . The Status code: %s" % (stream_id, req.status_code))
+                "Fail to Get a Stream using its ID : %s. The Status code: %s" % (stream_id, req.status_code))
             return None
     except requests.RequestException:
         import traceback

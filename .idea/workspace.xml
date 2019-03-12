@@ -1,47 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f8f5adda-e307-49d6-b916-ae714474e46d" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/tests/unit/rest/restful_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/streamr-client-python.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/connectAndPublish.py" beforeDir="false" afterPath="$PROJECT_DIR$/examples/connectAndPublish.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/createOrGetStream.py" beforeDir="false" afterPath="$PROJECT_DIR$/examples/createOrGetStream.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/client/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/client/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/client/client.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/client/client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/client/event.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/client/event.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/client/subscription.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/client/subscription.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/client/util/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/client/util/websock.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/client/util/websock.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/protocol/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/protocol/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/rest/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/rest/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/rest/session.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/rest/session.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/rest/stream.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/rest/stream.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/util/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/util/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/intergration/client_test.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/client_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/streamr/client_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/errormessage_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/protocol/errormessage_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/publishrequest_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/protocol/publishrequest_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/request_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/protocol/request_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/resendRequest_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/protocol/resendRequest_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/resendResponse_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/protocol/resendResponse_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/response_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/protocol/response_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/restful_test.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/streamAndPartition_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/protocol/streamAndPartition_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/streamMessage_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/protocol/streamMessage_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/subscribeRequest_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/protocol/subscribeRequest_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/subscription_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/streamr/subscription_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/unsubscribeRequest_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/protocol/unsubscribeRequest_test.py" afterDir="false" />
-    </list>
+    <list default="true" id="f8f5adda-e307-49d6-b916-ae714474e46d" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,17 +9,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/tests/__init__.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="15">
-              <caret line="1" column="5" selection-start-line="1" selection-start-column="5" selection-end-line="1" selection-end-column="5" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -100,11 +50,6 @@
               <item name="streamr-client-python" type="b2602c69:ProjectViewProjectNode" />
               <item name="streamr-client-python" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="streamr-client-python" type="b2602c69:ProjectViewProjectNode" />
-              <item name="streamr-client-python" type="462c0819:PsiDirectoryNode" />
-              <item name="tests" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -141,16 +86,15 @@
       <option name="presentableId" value="Default" />
       <updated>1552320635584</updated>
       <workItem from="1552320640022" duration="109000" />
-      <workItem from="1552371889404" duration="1639000" />
+      <workItem from="1552371889404" duration="1772000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1748000" />
+    <option name="totallyTimeSpent" value="1881000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="4" y="23" width="1239" height="777" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25396827" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -267,6 +211,9 @@
           <caret line="1" column="5" selection-start-line="1" selection-start-column="5" selection-end-line="1" selection-end-column="5" />
         </state>
       </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/unit/__init__.py">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
   </component>
 </project>

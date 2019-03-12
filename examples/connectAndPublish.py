@@ -11,7 +11,7 @@ import logging
 my_option = Option.get_default_option()
 my_option.auto_disconnect = False
 my_option.auto_connect = False
-my_option.api_key = 'your api key'
+my_option.api_key = 'your-api-key'
 
 my_client = Client(my_option)
 

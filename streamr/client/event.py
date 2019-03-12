@@ -53,7 +53,7 @@ class Event:
         if eventname in self.eventListOnce.keys():
             list(map(lambda x: x(*args), self.eventListOnce[eventname]))
             self.eventListOnce[eventname].clear()
-        logging.info('received eventname %s ' % eventname)
+        # logging.info('received eventname %s ' % eventname)
 
     def once(self, eventname, callback):
         """

@@ -8,7 +8,7 @@ from streamr.util.option import Option
 # To create a client object, you can use this function.
 
 my_option = Option.get_default_option()
-my_option.api_key = 'your own apiKey'
+my_option.api_key = 'your-api-Key'
 
 my_client = Client(my_option)
 
