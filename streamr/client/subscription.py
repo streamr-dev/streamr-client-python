@@ -126,7 +126,7 @@ class Subscription(Event):
 
     def check_for_gap(self, previous_offset):
         """
-        check wheter some msg is missed
+        check whether some msg is missed
         :param previous_offset:
         :return:
         """
@@ -157,7 +157,7 @@ class Subscription(Event):
                 self.stream_id, from_index, to_index))
             self.emit('gap', from_index, to_index)
         elif self.last_received_offset is not None and msg.offset <= self.last_received_offset:
-            logger.debug('Sub %s already recevied message: %s, last_received_offset :%s. Ignoring message.' % (
+            logger.debug('Sub %s already received message: %s, last_received_offset :%s. Ignoring message.' % (
                 self.sub_id, msg.offset, self.last_received_offset))
         else:
             self.last_received_offset = msg.offset
@@ -181,14 +181,14 @@ class Subscription(Event):
 
     def has_resend_option(self):
         """
-        check wheter subscription has a resend option
+        check whether subscription has a resend option
         :return:
         """
         return self.option.check_resend() > 0
 
-    def has_recevied_message(self):
+    def has_received_message(self):
         """
-        check wheter subscription has received message
+        check whether subscription has received message
         :return:
         """
         return self.last_received_offset is not None
@@ -198,7 +198,7 @@ class Subscription(Event):
         return the resend option
         :return:
         """
-        if self.has_recevied_message() and self.has_resend_option() and \
+        if self.has_received_message() and self.has_resend_option() and \
                 (self.option.resend_all is not None or
                  self.option.resend_from is not None or
                  self.option.resend_from_time is not None):

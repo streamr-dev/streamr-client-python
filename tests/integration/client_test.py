@@ -37,12 +37,12 @@ def test_client():
     stream_by_name = cli.get_stream_by_name('stream-test')
     assert(isinstance(stream_by_name, list))
     for s in stream:
-        assert(s['name'] == 'stream-test')
+        assert s['name'] == 'stream-test'
 
     stream_id = stream[0]['id']
     stream_by_id = cli.get_stream_by_id(stream_id)
-    assert(isinstance(stream_by_id, dict))
-    assert(stream_by_id['id'] == stream_id)
+    assert isinstance(stream_by_id, dict)
+    assert stream_by_id['id'] == stream_id
 
     if not cli.is_connected():
         cli.connect()
@@ -58,7 +58,7 @@ def test_client():
     def callback(parsed_msg, msg_object):
         """
         callback function which will be called when subscription received a message
-        :param parsed_msg: deserialized messge
+        :param parsed_msg: deserialized message
         :param msg_object: message dict object
         :return:
         """
@@ -73,7 +73,7 @@ def test_client():
         cli.publish(subscription, m)
 
     time.sleep(30)
-    assert(counts == 4)
+    assert counts == 4
     cli.disconnect()
 
     print('tests passed')

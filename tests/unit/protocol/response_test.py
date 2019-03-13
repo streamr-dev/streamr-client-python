@@ -86,35 +86,35 @@ assert isinstance(result.payload, ErrorPayload)
 assert result.payload.error == 'foo'
 
 serialized = Response.deserialize(examplesByType['0']).serialize()
-assert type(serialized) == str
+assert isinstance(serialized, str)
 assert examplesByType['0'] == json.loads(serialized)
 
 serialized = Response.deserialize(examplesByType['1']).serialize()
-assert type(serialized) == str
+assert isinstance(serialized, str)
 assert examplesByType['1'] == json.loads(serialized)
 
 serialized = Response.deserialize(examplesByType['2']).serialize()
-assert type(serialized) == str
+assert isinstance(serialized, str)
 assert examplesByType['2'] == json.loads(serialized)
 
 serialized = Response.deserialize(examplesByType['3']).serialize()
-assert type(serialized) == str
+assert isinstance(serialized, str)
 assert examplesByType['3'] == json.loads(serialized)
 
 serialized = Response.deserialize(examplesByType['4']).serialize()
-assert type(serialized) == str
+assert isinstance(serialized, str)
 assert examplesByType['4'] == json.loads(serialized)
 
 serialized = Response.deserialize(examplesByType['5']).serialize()
-assert type(serialized) == str
+assert isinstance(serialized, str)
 assert examplesByType['5'] == json.loads(serialized)
 
 serialized = Response.deserialize(examplesByType['6']).serialize()
-assert type(serialized) == str
+assert isinstance(serialized, str)
 assert examplesByType['6'] == json.loads(serialized)
 
 serialized = Response.deserialize(examplesByType['7']).serialize()
-assert type(serialized) == str
+assert isinstance(serialized, str)
 assert examplesByType['7'] == json.loads(serialized)
 
 print('response test passed')

@@ -50,7 +50,7 @@ class Connection(Event):
         def socket_open_callback(_):
             """
             callback function of socket open event
-            :param _: websock ojbect
+            :param _: websock object
             :return: None
             """
             logger.debug('Connected to %s' % self.option.url)

@@ -26,7 +26,7 @@ assert result.session_token == 'session_token'
 
 serialized = SubscribeRequest(
     'stream_id', 0, 'authKey', 'session_token').serialize()
-assert type(serialized) == str
+assert isinstance(serialized, str)
 dic = json.loads(serialized)
 
 assert dic == msg

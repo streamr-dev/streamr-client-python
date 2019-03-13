@@ -24,7 +24,7 @@ You can test the integration functions using the following steps.
 
 ```
 $ cd streamr-client-python
-$ python -m tests.intergration.client_test
+$ python -m tests.integration.client_test
 ```
 
 ### Usage
@@ -54,7 +54,7 @@ stream = client.get_or_create_stream('stream-test')
 
 ```
 
-#### gettting the stream id
+#### getting the stream id
 
 ```
 stream_id = stream[0]['id']

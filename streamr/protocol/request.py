@@ -49,7 +49,7 @@ class Request(EqualFunc, metaclass=RequestMeta):
     @classmethod
     def check_version(cls, msg):
         """
-        wheter the msg version is valid
+        whether the msg version is valid
         :param msg: str object
         :return: bool
         """

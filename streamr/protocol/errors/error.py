@@ -42,8 +42,8 @@ class UnSupportedPayloadError(Exception):
 
 class AbstractFunctionError(Exception):
     """
-    absctruct function  can't be called
+    abstract function  can't be called
     """
 
     def __init__(self, clazz):
-        super().__init__('Absctract function should be overrided by son class : %s' % clazz)
+        super().__init__('Abstract function should be override by son class : %s' % clazz)

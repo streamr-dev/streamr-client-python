@@ -58,7 +58,7 @@ class Client(Event):
         def broadcast_msg(msg):
             """
             callback function of broadcast response
-            :param msg: msg recieved from server
+            :param msg: msg received from server
             :return: None
             """
             subs = self.subs_by_stream_id.get(msg.payload.stream_id, None)
@@ -67,7 +67,7 @@ class Client(Event):
                     sub.handle_message(msg.payload, False)
             else:
                 logger.debug(
-                    'WARN: message receivied for stream with no subscriptions: %s' % msg.stream_id)
+                    'WARN: message received for stream with no subscriptions: %s' % msg.stream_id)
         self.connection.on('BroadcastMessage', broadcast_msg)
 
         def unicast_msg(msg):
@@ -221,7 +221,7 @@ class Client(Event):
 
     def publish(self, object_or_id, data, api_key=None):
         """
-        publis function
+        publish function
         :param object_or_id: str contains streamId or a object contains a attribute of stream_id
         :param data: data need be published
         :param api_key: api_key
@@ -456,7 +456,7 @@ class Client(Event):
 
     def handle_error(self, msg):
         """
-        error handeler
+        error handler
         :param msg: msg
         :return: None
         """

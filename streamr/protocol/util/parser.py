@@ -1,5 +1,5 @@
 """
-provide parser to parse json objct and time object
+provide parser to parse json object and time object
 """
 
 

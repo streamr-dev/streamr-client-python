@@ -49,7 +49,7 @@ msg = {
 serial = PublishRequest('stream_id123', 'authKey122', 'sessionToken11', {
 }, 1533924184016, 'deviceId', 'publisherAddress', 1, 'signature').serialize()
 
-assert(type(serial) == str)
+assert isinstance(serial, str)
 
 dic = json.loads(serial)
 

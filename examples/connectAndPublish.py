@@ -32,7 +32,7 @@ stream = my_client.get_or_create_stream('stream_test')
 # 1. 'stream_id':
 # 		you can find the stream_id on the website: streamr.com
 # 		You can also get the stream_id by using 'get_or_create_stream',
-# 		'get_stream_by_name', 'get_tream_by_id' functions
+# 		'get_stream_by_name', 'get_stream_by_id' functions
 # 2. callback function:
 # 		callback function will run when client received data from server to this stream
 #

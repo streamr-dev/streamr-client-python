@@ -44,7 +44,7 @@ class Response(EqualFunc, metaclass=ResponseMeta):
     def get_response_name(cls):
         """
         abstract method return response name
-        :return: resnponse name
+        :return: response name
         """
         raise AbstractFunctionError(type(cls))
 
@@ -85,7 +85,7 @@ class Response(EqualFunc, metaclass=ResponseMeta):
         """
         deserialize from msg to response object
         :param ori_msg: str or dict
-        :return: resnponse object
+        :return: response object
         """
         version, response_type, sub_id, payload_msg = jparser(ori_msg)
         cls.check_version(version)

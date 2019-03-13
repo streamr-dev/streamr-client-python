@@ -13,7 +13,7 @@ class ResponseMeta(type):
     @classmethod
     def register(mcs, clazz, typez):
         """
-        regist son class to response_class_by_response_type
+        register son class to response_class_by_response_type
         :param clazz: son class
         :param typez: son class type
         :return: None
@@ -38,7 +38,7 @@ class RequestMeta(type):
     @classmethod
     def register(mcs, clazz, typez):
         """
-        regist son class to response_class_by_response_type
+        register son class to response_class_by_response_type
         :param clazz: son class
         :param typez: son class type
         :return: None

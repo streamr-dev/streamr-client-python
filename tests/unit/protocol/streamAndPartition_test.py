@@ -24,7 +24,7 @@ msg = {
 }
 
 res = StreamAndPartition('sub_id', 0).serialize()
-assert type(res) == str
+assert isinstance(res, str)
 
 assert msg == json.loads(res)
 

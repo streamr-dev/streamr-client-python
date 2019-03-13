@@ -1,5 +1,5 @@
 """
-this module provide intergration test for client
+this module provide integration test for client
 """
 import logging
 from collections import deque
@@ -120,7 +120,7 @@ def test_connect():
     cli.disconnect()
 
 
-def test_conenct_after_subscribe():
+def test_connect_after_subscribe():
     cli, conn = init()
 
     def connected_callback():
@@ -193,6 +193,6 @@ def test_subscribe_and_unsubscribe():
 
 if __name__ == '__main__':
     test_connect()
-    test_conenct_after_subscribe()
+    test_connect_after_subscribe()
     test_subscribe_and_unsubscribe()
     print('client test passed')

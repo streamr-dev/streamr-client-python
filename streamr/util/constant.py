@@ -33,7 +33,7 @@ class RestfullConstant:
 
 class StreamMessageConstant:
     """
-    strore the key of dict of StreamMessage
+    store the key of dict of StreamMessage
     """
 
     STREAM_ID = 'streamId'
@@ -52,7 +52,7 @@ class StreamMessageConstant:
 
 class StreamAndPartitionConstant:
     """
-    strore the key of dict of StreamAndPartitionConstant
+    store the key of dict of StreamAndPartitionConstant
     """
 
     STREAM_ID = 'stream'
@@ -61,7 +61,7 @@ class StreamAndPartitionConstant:
 
 class ResendResponsePayloadConstant:
     """
-    strore the key of dict of ResendResponsePayloadConstant
+    store the key of dict of ResendResponsePayloadConstant
     """
     STREAM_ID = 'stream'
     STREAM_PARTITION = 'partition'
@@ -70,14 +70,14 @@ class ResendResponsePayloadConstant:
 
 class ErrorPayloadConstant:
     """
-    strore the key of dict of ErrorPayloadConstant
+    store the key of dict of ErrorPayloadConstant
     """
     ERROR = 'error'
 
 
 class RequestConstant:
     """
-    strore the key of dict of RequestConstant
+    store the key of dict of RequestConstant
     """
     TYPE = 'type'
     STREAM_ID = 'stream'

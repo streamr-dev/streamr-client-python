@@ -20,7 +20,7 @@ stream1 = my_client.create_stream('stream-test-1')
 
 stream2 = my_client.get_or_create_stream('stream-test-2')
 
-# To get a stream, you can use 'get_stream_by_name' or get_tream_by_id' method
+# To get a stream, you can use 'get_stream_by_name' or get_stream_by_id' method
 
 # get_stream_by_name will return all the streams with steam name
 # the return is a list object containing the information of all streams

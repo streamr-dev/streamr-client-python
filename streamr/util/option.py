@@ -144,17 +144,17 @@ class Option(EqualFunc):
 
     def check_url(self):
         """
-        check wheter Option has url and rest_url
+        check whether Option has url and rest_url
         :return: bool
         """
         if not isinstance(self.url, str) or ':' not in self.url:
             raise ValueError('url should be given.'
                              ' You can use Client.get_default_option() '
-                             'to create a default Clientoption')
+                             'to create a default ClientOption')
         if not isinstance(self.rest_url, str) or ':' not in self.rest_url:
             raise ValueError('rest url should ge given. '
                              'You can use Client.get_default_option() '
-                             'to create a default Clientoption')
+                             'to create a default ClientOption')
 
     def check_resend(self):
         """

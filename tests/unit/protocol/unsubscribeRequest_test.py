@@ -31,7 +31,7 @@ serialized = UnsubscribeRequest('sub_id', 0, 'authKey', 'session_token').seriali
 dic = json.loads(serialized)
 
 
-assert type(serialized) == str
+assert isinstance(serialized, str)
 
 assert dic == msg
 

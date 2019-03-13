@@ -17,7 +17,7 @@ msg = {
 serialized = Request(msg.get('type', None), msg.get('stream', None),
                      msg.get('authKey', None),
                      msg.get('sessionToken', None)).serialize()
-assert type(serialized) == str
+assert isinstance(serialized, str)
 dic = json.loads(serialized)
 
 assert dic == msg
