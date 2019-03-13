@@ -18,9 +18,14 @@ This module is test on Python 3.6+
 3. `pip3 install .`
 
 ### Tests
-You can test the integration functions using the following files.
+You can test the integration functions using the following steps.
 
 `client_test.py`:  you can run this file to test.
+
+```
+$ cd streamr-client-python
+$ python -m tests.intergration.client_test
+```
 
 ### Usage
 
