@@ -12,7 +12,7 @@ from tests.config import get_api_key
 
 
 def test_client():
-    logging.basicConfig(level=logging.ERROR, 
+    logging.basicConfig(level=logging.ERROR, filename='mylog.log',
                         format='%(relativeCreated)6d %(threadName)s %(levelname)s :%(message)s')
 
     option = Option.get_default_option()

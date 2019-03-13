@@ -237,7 +237,7 @@ class Client(Event):
         if api_key is None:
             api_key = self.option.api_key
 
-        if type(data) not in [list, dict]:
+        if not isinstance(data, (list, dict)):
             raise ValueError('data must be an dict or list ! Given: %s' % (type(data)))
 
         if self.is_connected() is True:

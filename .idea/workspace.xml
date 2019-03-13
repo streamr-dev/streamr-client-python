@@ -2,28 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fb30ad78-fd55-47a0-8d56-c93cbc40308c" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/connectAndPublish.py" beforeDir="false" afterPath="$PROJECT_DIR$/examples/connectAndPublish.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/createOrGetStream.py" beforeDir="false" afterPath="$PROJECT_DIR$/examples/createOrGetStream.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/streamr/client/client.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/client/client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/client/connection.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/client/connection.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/client/subscription.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/client/subscription.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/protocol/errors/error.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/protocol/errors/error.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/protocol/request.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/protocol/request.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/protocol/response.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/protocol/response.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/protocol/util/meta.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/protocol/util/meta.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/protocol/util/parser.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/protocol/util/parser.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/util/constant.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/util/constant.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/streamr/util/option.py" beforeDir="false" afterPath="$PROJECT_DIR$/streamr/util/option.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/intergration/client_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/client_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/protocol/publishrequest_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/protocol/publishrequest_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/protocol/request_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/protocol/request_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/protocol/response_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/protocol/response_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/protocol/streamAndPartition_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/protocol/streamAndPartition_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/protocol/subscribeRequest_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/protocol/subscribeRequest_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/protocol/unsubscribeRequest_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/protocol/unsubscribeRequest_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/streamr/client_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/streamr/client_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/unit/streamr/subscription_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/unit/streamr/subscription_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/integration/client_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/integration/client_test.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -32,84 +13,24 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/streamr/client/client.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="264">
-              <caret line="373" column="27" lean-forward="true" selection-start-line="373" selection-start-column="27" selection-end-line="373" selection-end-column="27" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/integration/client_test.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="139">
-              <caret line="15" column="70" selection-start-line="15" selection-start-column="70" selection-end-line="15" selection-end-column="70" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/unit/streamr/client_test.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="132">
-              <caret line="157" column="4" selection-start-line="157" selection-start-column="4" selection-end-line="157" selection-end-column="4" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/examples/connectAndPublish.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="132">
-              <caret line="56" selection-start-line="56" selection-end-line="56" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/env">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret column="49" selection-start-column="49" selection-end-column="49" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/LICENSE">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="139">
-              <caret line="163" column="30" selection-start-line="163" selection-start-column="30" selection-end-line="163" selection-end-column="30" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/streamr/protocol/util/meta.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="312">
-              <caret line="29" lean-forward="true" selection-start-line="29" selection-end-line="29" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
       <find>assert</find>
       <find>type(</find>
       <find>==</find>
-      <find>type</find>
       <find>test_connect_after_subscribe</find>
       <find>intergration</find>
       <find>stream_test</find>
       <find>len</find>
       <find>len(</find>
       <find>subs_by_stream_id</find>
+      <find>type</find>
+      <find>subscrib</find>
+      <find>__resend_and_subscribe</find>
+      <find>info</find>
+      <find>.info</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -139,8 +60,11 @@
         <option value="$PROJECT_DIR$/streamr/client/subscription.py" />
         <option value="$PROJECT_DIR$/tests/unit/streamr/subscription_test.py" />
         <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/streamr/client/client.py" />
         <option value="$PROJECT_DIR$/streamr/protocol/util/meta.py" />
+        <option value="$PROJECT_DIR$/streamr/client/client.py" />
+        <option value="$PROJECT_DIR$/mylog.log" />
+        <option value="$PROJECT_DIR$/streamr/client/event.py" />
+        <option value="$PROJECT_DIR$/tests/integration/client_test.py" />
       </list>
     </option>
   </component>
@@ -199,18 +123,17 @@
       <option name="presentableId" value="Default" />
       <updated>1552442566768</updated>
       <workItem from="1552442572676" duration="616000" />
-      <workItem from="1552443420641" duration="3390000" />
+      <workItem from="1552443420641" duration="8590000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="4006000" />
+    <option name="totallyTimeSpent" value="9206000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="4" y="23" width="1239" height="777" extended-state="0" />
-    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.28487885" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.28487885" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -224,9 +147,9 @@
       <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Inspection Results" order="10" weight="0.34890512" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="11" visible="true" weight="0.329927" />
+      <window_info anchor="bottom" id="Terminal" order="11" visible="true" weight="0.329927" />
       <window_info anchor="bottom" id="Event Log" order="12" side_tool="true" />
-      <window_info anchor="bottom" id="Python Console" order="13" />
+      <window_info anchor="bottom" id="Python Console" order="13" weight="0.329927" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -249,13 +172,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1811">
           <caret line="158" column="55" lean-forward="true" selection-start-line="158" selection-start-column="55" selection-end-line="158" selection-end-column="55" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/streamr/rest/stream.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="3" lean-forward="true" selection-start-column="3" selection-end-column="3" />
         </state>
       </provider>
     </entry>
@@ -322,13 +238,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/streamr/client/event.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="139">
-          <caret line="18" column="17" selection-start-line="18" selection-start-column="17" selection-end-line="18" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/streamr/util/option.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="132">
@@ -385,37 +294,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/examples/createOrGetStream.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="22" column="71" selection-start-line="22" selection-start-column="71" selection-end-line="22" selection-end-column="71" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/examples/createClient.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="19" column="21" selection-start-line="19" selection-start-column="21" selection-end-line="19" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="203">
-            <caret line="56" column="26" lean-forward="true" selection-start-line="56" selection-start-column="26" selection-end-line="56" selection-end-column="26" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/unit/rest/restful_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="229">
-          <caret line="58" lean-forward="true" selection-start-line="58" selection-end-line="58" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/__init__.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -423,27 +301,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="213">
           <caret line="96" column="27" lean-forward="true" selection-start-line="96" selection-start-column="27" selection-end-line="96" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/integration/client_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="139">
-          <caret line="15" column="70" selection-start-line="15" selection-start-column="70" selection-end-line="15" selection-end-column="70" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/unit/streamr/client_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="132">
-          <caret line="157" column="4" selection-start-line="157" selection-start-column="4" selection-end-line="157" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/examples/connectAndPublish.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="132">
-          <caret line="56" selection-start-line="56" selection-end-line="56" />
         </state>
       </provider>
     </entry>
@@ -461,13 +318,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mylog.log">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" column="12" selection-start-line="17" selection-start-column="12" selection-end-line="17" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/streamr/protocol/util/meta.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="312">
@@ -475,10 +325,86 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/examples/createOrGetStream.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="139">
+          <caret line="22" column="71" selection-start-line="22" selection-start-column="71" selection-end-line="22" selection-end-column="71" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/createClient.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="19" column="21" selection-start-line="19" selection-start-column="21" selection-end-line="19" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/connectAndPublish.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="94">
+          <caret line="56" selection-start-line="56" selection-end-line="56" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="870">
+            <caret line="58" column="3" lean-forward="true" selection-start-line="58" selection-start-column="3" selection-end-line="58" selection-end-column="3" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/unit/streamr/client_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2396">
+          <caret line="17" column="50" selection-start-line="17" selection-start-column="50" selection-end-line="17" selection-end-column="50" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/streamr/client/event.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="224">
+          <caret line="55" column="60" lean-forward="true" selection-start-line="55" selection-start-column="60" selection-end-line="55" selection-end-column="60" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/streamr/client/client.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="373" column="27" lean-forward="true" selection-start-line="373" selection-start-column="27" selection-end-line="373" selection-end-column="27" />
+        <state relative-caret-position="54">
+          <caret line="238" selection-start-line="238" selection-end-line="238" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/streamr/rest/stream.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-727">
+          <caret column="3" lean-forward="true" selection-start-column="3" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/unit/rest/restful_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="558">
+          <caret line="60" column="27" selection-start-line="60" selection-start-column="4" selection-end-line="60" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/integration/client_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="229">
+          <caret line="77" lean-forward="true" selection-start-line="77" selection-end-line="77" />
+          <folding>
+            <element signature="e#22#36#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mylog.log">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1">
+          <caret line="49" column="42" lean-forward="true" selection-start-line="49" selection-start-column="42" selection-end-line="49" selection-end-column="42" />
         </state>
       </provider>
     </entry>
