@@ -12,7 +12,7 @@ setup(
               'streamr.protocol', 'streamr.protocol.errors', 'streamr.protocol.util',
               'streamr.rest', 'streamr.util'],
     install_requires=['websocket-client == 0.54.0',
-                      'requests == 2.18.4',
+                      'requests>=2.20.0',
                       'six==1.11.0',
                       'setuptools==38.4.0']
     )
