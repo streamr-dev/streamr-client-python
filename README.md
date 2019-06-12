@@ -93,7 +93,7 @@ while(not client.is_connected()):
 ```
 def callback(msg,_):
 	print('message received . The Cotent is : %s'%(msg))
-
+stream_id = 'your stream ID'
 subscription = client.subscribe(stream_id, callback)
 
 ```
@@ -104,8 +104,9 @@ subscription = client.subscribe(stream_id, callback)
 ```
 
 data = [{"name":'google',"age":19},{"name":"yahoo","age":11},{"name":"facebook","age":13},{"name":"twitter","age":1}]
+stream_id = 'your stream ID'
 for d in data:
-    client.publish(subscription, d)
+    client.publish(stream_id, d)
 
 ```
 
