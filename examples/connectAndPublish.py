@@ -3,8 +3,7 @@ an example of connect and publish
 """
 
 
-from streamr.client.client import Client
-from streamr.util.option import Option
+from streamr import Client, Option
 import logging
 import time
 
@@ -52,7 +51,6 @@ def callback(parsed_msg, msg):
     """
     logging.info('received message. Content : %s, stream_id :%s stream_partition : %s'
                  % (parsed_msg, msg.stream_id, msg.stream_partition))
-
 
 subscrip = my_client.subscribe(stream_id, callback)
 

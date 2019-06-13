@@ -6,7 +6,7 @@ test ErrorMessage class
 from streamr.protocol.payload import ErrorPayload
 import json
 
-if __name__ == '__main__':
+def test_ErrorPayload():
 
     msg = {'error': 'foo'}
 
@@ -19,4 +19,3 @@ if __name__ == '__main__':
 
     assert obj == msg
 
-    print('ErrorMessage test passed')

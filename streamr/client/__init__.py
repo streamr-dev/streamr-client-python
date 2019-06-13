@@ -1,5 +1,8 @@
 """
-client module
+client package
 
-client class, connection class, event class, subscription class
+client module:  Client class
+connection module: Connection class
+event module: Event class
+subscription module: subscrption class
 """

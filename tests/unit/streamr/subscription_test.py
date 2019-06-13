@@ -471,26 +471,3 @@ def test_event_handling_no_resent():
     assert count == 1
 
 
-if __name__ == '__main__':
-    test_bye()
-    test_duplicate_handling()
-    test_duplicate_handling_when_resending()
-    test_emit_event()
-    test_event_handling_no_resent()
-    test_event_handling_resent()
-    test_gap()
-    test_get_original_resend_option()
-    test_get_resend_option_after_received_data1()
-    test_get_resend_option_after_received_data2()
-    test_get_resend_option_after_received_data3()
-    test_get_resend_option_after_received_data4()
-    test_handle_error()
-    test_handle_message()
-    test_handle_messages()
-    test_handle_message_when_resending_and_is_resend_false()
-    test_handle_message_when_resending_and_is_resend_true()
-    test_invalid_json_error()
-    test_no_gap()
-    test_update_state()
-
-    print('subscription test passed')

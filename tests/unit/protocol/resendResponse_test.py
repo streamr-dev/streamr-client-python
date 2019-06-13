@@ -6,29 +6,28 @@ test the resendResponse class
 from streamr.protocol.payload import ResendResponsePayload
 import json
 
-msg = {
-    'stream': 'sub_id',
-    'partition': 0,
-    'sub': 0}
+def test_ResendResponsePayload():
+    msg = {
+        'stream': 'sub_id',
+        'partition': 0,
+        'sub': 0}
 
-payload = ResendResponsePayload.deserialize(json.dumps(msg))
-assert isinstance(payload, ResendResponsePayload)
-assert payload.stream_id == msg.get('stream', None)
-assert payload.stream_partition == msg.get('partition', None)
-assert payload.sub_id == msg.get('sub', None)
-
-
-msg = {
-    'stream': 'sub_id',
-    'partition': 0,
-    'sub': 0,
-}
+    payload = ResendResponsePayload.deserialize(json.dumps(msg))
+    assert isinstance(payload, ResendResponsePayload)
+    assert payload.stream_id == msg.get('stream', None)
+    assert payload.stream_partition == msg.get('partition', None)
+    assert payload.sub_id == msg.get('sub', None)
 
 
-serialized = ResendResponsePayload('sub_id', 0, 0).serialize()
+    msg = {
+        'stream': 'sub_id',
+        'partition': 0,
+        'sub': 0,
+    }
 
-assert isinstance(serialized, str)
 
-assert msg == json.loads(serialized)
+    serialized = ResendResponsePayload('sub_id', 0, 0).serialize()
 
-print('test resendResponse passed')
+    assert isinstance(serialized, str)
+
+    assert msg == json.loads(serialized)

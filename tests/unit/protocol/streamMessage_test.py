@@ -97,7 +97,7 @@ def test_unsupported_version():
                       1529549961116, 0, 941516902, 941499898,
                       StreamMessage.ContentType.JSON, '{"valid":"json"}',
                       1, 'address', 'signature').serialize(123)
-    except Exception as e:
+    except UnsupportedVersionError as e:
         assert isinstance(e, UnsupportedVersionError)
         assert e.version == 123
 
@@ -180,14 +180,3 @@ def test_to_ojbect_compact_is_true():
     dic = msg.to_object(28, True, False)
 
     assert dic == obj
-
-
-if __name__ == "__main__":
-    test_stream_message_v28()
-    test_stream_message_v29()
-    test_get_parsed_content()
-    test_to_object()
-    test_to_ojbect_compact_is_false()
-    test_to_ojbect_compact_is_true()
-    test_unsupported_version()
-    print('streamMessage test passed')
