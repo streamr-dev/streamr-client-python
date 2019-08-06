@@ -13,15 +13,15 @@ import json
 
 
 def test_response():
-    examplesByType = {
+    examples_by_type = {
         '0': [0, 0, None, [28, 'TsvTbqshTsuLg_HyUjxigA', 0, 1529549961116, 0,
-                        941516902, 941499898,
-                        StreamMessage.ContentType.JSON,
-                        '{"valid": "json"}']],
+                           941516902, 941499898,
+                           StreamMessage.ContentType.JSON,
+                           '{"valid": "json"}']],
         '1': [0, 1, 'sub_id', [28, 'TsvTbqshTsuLg_HyUjxigA', 0, 1529549961116, 0,
-                            941516902, 941499898,
-                            StreamMessage.ContentType.JSON,
-                            '{"valid": "json"}']],
+                               941516902, 941499898,
+                               StreamMessage.ContentType.JSON,
+                               '{"valid": "json"}']],
         '2': [0, 2, None, {
             'stream': 'stream_id',
             'partition': 0,
@@ -50,71 +50,71 @@ def test_response():
         }],
     }
 
-    result = Response.deserialize(json.dumps(examplesByType['0']))
+    result = Response.deserialize(json.dumps(examples_by_type['0']))
     assert isinstance(result, BroadcastMessage)
     assert isinstance(result.payload, StreamMessage)
 
-    result = Response.deserialize(json.dumps(examplesByType['1']))
+    result = Response.deserialize(json.dumps(examples_by_type['1']))
     assert isinstance(result, UnicastMessage)
     assert isinstance(result.payload, StreamMessage)
     assert result.sub_id == 'sub_id'
 
-    result = Response.deserialize(json.dumps(examplesByType['2']))
+    result = Response.deserialize(json.dumps(examples_by_type['2']))
     assert isinstance(result, SubscribeResponse)
     assert isinstance(result.payload, StreamAndPartition)
 
-    result = Response.deserialize(json.dumps(examplesByType['3']))
+    result = Response.deserialize(json.dumps(examples_by_type['3']))
     assert isinstance(result, UnsubscribeResponse)
     assert isinstance(result.payload, StreamAndPartition)
 
-    result = Response.deserialize(json.dumps(examplesByType['4']))
+    result = Response.deserialize(json.dumps(examples_by_type['4']))
     assert isinstance(result, ResendResponseResending)
     assert isinstance(result.payload, ResendResponsePayload)
     assert result.payload.sub_id == 'sub_id'
 
-    result = Response.deserialize(json.dumps(examplesByType['5']))
+    result = Response.deserialize(json.dumps(examples_by_type['5']))
     assert isinstance(result, ResendResponseResent)
     assert isinstance(result.payload, ResendResponsePayload)
     assert result.payload.sub_id == 'sub_id'
 
-    result = Response.deserialize(json.dumps(examplesByType['6']))
+    result = Response.deserialize(json.dumps(examples_by_type['6']))
     assert isinstance(result, ResendResponseNoResend)
     assert isinstance(result.payload, ResendResponsePayload)
     assert result.payload.sub_id == 'sub_id'
 
-    result = Response.deserialize(json.dumps(examplesByType['7']))
+    result = Response.deserialize(json.dumps(examples_by_type['7']))
     assert isinstance(result, ErrorResponse)
     assert isinstance(result.payload, ErrorPayload)
     assert result.payload.error == 'foo'
 
-    serialized = Response.deserialize(examplesByType['0']).serialize()
+    serialized = Response.deserialize(examples_by_type['0']).serialize()
     assert isinstance(serialized, str)
-    assert examplesByType['0'] == json.loads(serialized)
+    assert examples_by_type['0'] == json.loads(serialized)
 
-    serialized = Response.deserialize(examplesByType['1']).serialize()
+    serialized = Response.deserialize(examples_by_type['1']).serialize()
     assert isinstance(serialized, str)
-    assert examplesByType['1'] == json.loads(serialized)
+    assert examples_by_type['1'] == json.loads(serialized)
 
-    serialized = Response.deserialize(examplesByType['2']).serialize()
+    serialized = Response.deserialize(examples_by_type['2']).serialize()
     assert isinstance(serialized, str)
-    assert examplesByType['2'] == json.loads(serialized)
+    assert examples_by_type['2'] == json.loads(serialized)
 
-    serialized = Response.deserialize(examplesByType['3']).serialize()
+    serialized = Response.deserialize(examples_by_type['3']).serialize()
     assert isinstance(serialized, str)
-    assert examplesByType['3'] == json.loads(serialized)
+    assert examples_by_type['3'] == json.loads(serialized)
 
-    serialized = Response.deserialize(examplesByType['4']).serialize()
+    serialized = Response.deserialize(examples_by_type['4']).serialize()
     assert isinstance(serialized, str)
-    assert examplesByType['4'] == json.loads(serialized)
+    assert examples_by_type['4'] == json.loads(serialized)
 
-    serialized = Response.deserialize(examplesByType['5']).serialize()
+    serialized = Response.deserialize(examples_by_type['5']).serialize()
     assert isinstance(serialized, str)
-    assert examplesByType['5'] == json.loads(serialized)
+    assert examples_by_type['5'] == json.loads(serialized)
 
-    serialized = Response.deserialize(examplesByType['6']).serialize()
+    serialized = Response.deserialize(examples_by_type['6']).serialize()
     assert isinstance(serialized, str)
-    assert examplesByType['6'] == json.loads(serialized)
+    assert examples_by_type['6'] == json.loads(serialized)
 
-    serialized = Response.deserialize(examplesByType['7']).serialize()
+    serialized = Response.deserialize(examples_by_type['7']).serialize()
     assert isinstance(serialized, str)
-    assert examplesByType['7'] == json.loads(serialized)
+    assert examples_by_type['7'] == json.loads(serialized)

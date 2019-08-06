@@ -6,7 +6,8 @@ test PublishRequest
 from streamr.protocol.request import PublishRequest
 import json
 
-def test_PublishRequest():
+
+def test_publish_request():
     
     msg = {
         "type": 'publish',
@@ -33,7 +34,6 @@ def test_PublishRequest():
     assert(result.publisher_address == msg['addr'])
     assert(result.signature_type == msg['sigtype'])
     assert(result.signature == msg['sig'])
-
 
     msg = {
         "type": 'publish',

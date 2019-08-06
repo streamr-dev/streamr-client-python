@@ -13,6 +13,7 @@ from streamr.client.event import Event
 from streamr.client.connection import Connection
 from streamr.client.subscription import Subscription
 from streamr.util.option import Option
+from streamr.util.constant import EventConstant
 from streamr.client.errors.error import ConnectionErr
 from streamr.rest.session import get_session_token_by_api_key
 from streamr.rest.stream import creating, getting_by_name, getting_by_id
@@ -80,7 +81,7 @@ class Client(Event):
             if msg.sub_id is not None and self.sub_by_sub_id.get(msg.sub_id, None) is not None:
                 self.sub_by_sub_id[msg.sub_id].handle_message(msg.payload, True)
             else:
-                logger.debug('WARN: subscription not fround for stream: %s, sub: %s' % (
+                logger.debug('WARN: subscription not found for stream: %s, sub: %s' % (
                     msg.stream_id, msg.sub_id))
         self.connection.on('UnicastMessage', unicast_msg)
 
@@ -94,7 +95,7 @@ class Client(Event):
             if len(subs) != 0:
                 for sub in subs:
                     if sub.resending is False:
-                        sub.set_state(Subscription.State.SUBSCRIBED)
+                        sub.set_state(EventConstant.SUBSCRIBED)
             logger.debug('Client subscribed :%s' % msg.payload)
         self.connection.on('SubscribeResponse', subscribe_response)
 
@@ -108,7 +109,7 @@ class Client(Event):
             if len(subs) != 0:
                 for sub in subs:
                     self.__remove_subscription(sub)
-                    sub.set_state(Subscription.State.UNSUBSCRIBED)
+                    sub.set_state(EventConstant.UNSUBSCRIBED)
             self.__check_auto_disconnect()
             logger.debug('Client unsubscribed :%s' % msg.payload)
         self.connection.on('UnsubscribeResponse', unsubscribe_response)
@@ -120,7 +121,7 @@ class Client(Event):
             :return: None
             """
             if self.sub_by_sub_id.get(msg.payload.sub_id, None) is not None:
-                self.sub_by_sub_id[msg.payload.sub_id].emit('resending', msg.payload)
+                self.sub_by_sub_id[msg.payload.sub_id].emit(EventConstant.RESENDING, msg.payload)
             else:
                 logger.debug('resent: Subscription %s is gone already' %
                              msg.payload.sub_id)
@@ -133,7 +134,7 @@ class Client(Event):
             :return: None
             """
             if self.sub_by_sub_id.get(msg.payload.sub_id, None) is not None:
-                self.sub_by_sub_id[msg.payload.sub_id].emit('resent', msg.payload)
+                self.sub_by_sub_id[msg.payload.sub_id].emit(EventConstant.RESENT, msg.payload)
             else:
                 logger.debug(
                     'resent: Subscription %s is gone already', msg.payload.sub_id)
@@ -146,7 +147,7 @@ class Client(Event):
             :return: None
             """
             if self.sub_by_sub_id.get(msg.payload.sub_id, None) is not None:
-                self.sub_by_sub_id[msg.payload.sub_id].emit('no_resend', msg.payload)
+                self.sub_by_sub_id[msg.payload.sub_id].emit(EventConstant.NO_RESEND, msg.payload)
             else:
                 logger.debug('resent: Subscription %s is gone already' %
                              msg.payload.sub_id)
@@ -161,15 +162,15 @@ class Client(Event):
             for key in self.subs_by_stream_id.keys():
                 subs = self.subs_by_stream_id[key]
                 for sub in subs:
-                    if sub.get_state() != Subscription.State.SUBSCRIBED:
+                    if sub.get_state() != EventConstant.SUBSCRIBED:
                         self.__resend_and_subscribe(sub)
 
             publish_queue_copy = self.publish_queue
             self.publish_queue = []
             for element in publish_queue_copy:
                 self.publish(*element)
-            self.emit('connected')
-        self.connection.on('connected', connected_listener)
+            self.emit(EventConstant.CONNECTED)
+        self.connection.on(EventConstant.CONNECTED, connected_listener)
 
         def disconnected_listener():
             """
@@ -180,9 +181,9 @@ class Client(Event):
             for k in self.subs_by_stream_id.keys():
                 subs = self.subs_by_stream_id[k]
                 for sub in subs:
-                    sub.set_state(Subscription.State.UNSUBSCRIBED)
-            self.emit('disconnected')
-        self.connection.on('disconnected', disconnected_listener)
+                    sub.set_state(EventConstant.UNSUBSCRIBED)
+            self.emit(EventConstant.DISCONNECTED)
+        self.connection.on(EventConstant.DISCONNECTED, disconnected_listener)
 
         def error(err):
             """
@@ -196,7 +197,7 @@ class Client(Event):
                     sub.handle_error(err)
             else:
                 logger.error(err.with_traceback(err.__traceback__))
-        self.connection.on('error', error)
+        self.connection.on(EventConstant.ERROR, error)
 
     def __auto_update_session_token(self):
         self.session_thread_lock.acquire()
@@ -260,7 +261,7 @@ class Client(Event):
         """
         if self.is_connected() is True:
             raise ConnectionErr('Already connected!')
-        elif self.connection.state == Connection.State.CONNECTING:
+        elif self.connection.state == EventConstant.CONNECTING:
             raise ConnectionErr('Already connecting')
 
         logger.debug('Connecting to %s' % self.option.url)
@@ -304,7 +305,7 @@ class Client(Event):
             if not sub.resending:
                 self.__request_resend(
                     sub, Option(resend_from=from_, resend_to=to_))
-        sub.on('gap', gap_handler)
+        sub.on(EventConstant.GAP, gap_handler)
 
         def done_handler():
             """
@@ -313,11 +314,11 @@ class Client(Event):
             """
             logger.debug('done event for sub %s ' % sub.sub_id)
             self.unsubscribe(sub)
-        sub.on('done', done_handler)
+        sub.on(EventConstant.DONE, done_handler)
 
         self.__add_subscription(sub)
 
-        if self.connection.state == Connection.State.CONNECTED:
+        if self.connection.state == EventConstant.CONNECTED:
             self.__resend_and_subscribe(sub)
         elif self.option.auto_connect is True:
             try:
@@ -340,14 +341,14 @@ class Client(Event):
 
         if self.subs_by_stream_id.get(sub.stream_id, None) is not None and \
                 len(self.subs_by_stream_id.get(sub.stream_id, None)) == 1 and \
-                self.is_connected() is True and sub.get_state() == Subscription.State.SUBSCRIBED:
-            sub.set_state(Subscription.State.UNSUBSCRIBING)
+                self.is_connected() is True and sub.get_state() == EventConstant.SUBSCRIBED:
+            sub.set_state(EventConstant.UNSUBSCRIBING)
             self.__request_unsubscribe(sub.stream_id)
 
-        elif sub.get_state() != Subscription.State.UNSUBSCRIBING and \
-                sub.get_state() != Subscription.State.UNSUBSCRIBED:
+        elif sub.get_state() != EventConstant.UNSUBSCRIBING and \
+                sub.get_state() != EventConstant.UNSUBSCRIBED:
             self.__remove_subscription(sub)
-            sub.set_state(Subscription.State.UNSUBSCRIBED)
+            sub.set_state(EventConstant.UNSUBSCRIBED)
             self.__check_auto_disconnect()
 
     def unsubscribe_all(self, stream_id):
@@ -368,7 +369,7 @@ class Client(Event):
         """
         :return: the connection state
         """
-        return self.connection.state == Connection.State.CONNECTED
+        return self.connection.state == EventConstant.CONNECTED
 
     def reconnected(self):
         """
@@ -410,7 +411,7 @@ class Client(Event):
             self.disconnect()
 
     def __resend_and_subscribe(self, sub):
-        if sub.get_state() != Subscription.State.SUBSCRIBED and not sub.resending:
+        if sub.get_state() != EventConstant.SUBSCRIBED and not sub.resending:
 
             def subscribed():
                 """
@@ -419,7 +420,7 @@ class Client(Event):
                 """
                 if sub.has_resend_option():
                     self.__request_resend(sub)
-            sub.once('subscribed', subscribed)
+            sub.once(EventConstant.SUBSCRIBED, subscribed)
 
             self.__request_subscribe(sub)
 
@@ -429,7 +430,7 @@ class Client(Event):
 
         subscribed_subs = []
         for s in subs:
-            if s.get_state() == Subscription.State.SUBSCRIBED:
+            if s.get_state() == EventConstant.SUBSCRIBED:
                 subscribed_subs.append(s)
 
         if len(subscribed_subs) == 0:
@@ -437,11 +438,11 @@ class Client(Event):
                 sub.stream_id, 0, sub.api_key, self.session_token)
             logger.debug('_requestSubscribing client :%s' % request)
             self.connection.send(request)
-            sub.set_state(Subscription.State.SUBSCRIBING)
+            sub.set_state(EventConstant.SUBSCRIBING)
         elif len(subscribed_subs) > 0:
             logger.debug(
                 '__request_subscribe: another subscription for same stream : %s, subscribing' % sub.stream_id)
-            sub.set_state(Subscription.State.SUBSCRIBED)
+            sub.set_state(EventConstant.SUBSCRIBED)
 
     def __request_unsubscribe(self, stream_id, partition=0, api_key=None):
         logger.debug('Client unsubscribing stream %s' % stream_id)
@@ -469,7 +470,7 @@ class Client(Event):
         :return: None
         """
         logger.debug(msg)
-        self.emit('error', msg)
+        self.emit(EventConstant.ERROR, msg)
 
     def create_stream(self, stream_name, stream_des=None):
         """

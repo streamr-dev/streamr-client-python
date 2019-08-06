@@ -129,3 +129,23 @@ class OptionConstant:
     RESEND_ALL = 'resend_all'
 
 
+class EventConstant:
+    """
+    store the event name for client, connection and subscription
+    """
+
+    CONNECTING = 'CONNECTING'
+    CONNECTED = 'CONNECTED'
+    DISCONNECTING = 'DISCONNECTING'
+    DISCONNECTED = 'DISCONNECTED'
+    SUBSCRIBING = 'SUBSCRIBING'
+    SUBSCRIBED = 'SUBSCRIBED'
+    UNSUBSCRIBING = 'UNSUBSCRIBING'
+    UNSUBSCRIBED = 'UNSUBSCRIBED'
+    ERROR = 'ERROR'
+    RESENDING = 'RESENDING'
+    RESENT = 'RESENT'
+    NO_RESEND = 'NO_RESEND'
+    GAP = 'GAP'
+    DONE = 'DONE'
+

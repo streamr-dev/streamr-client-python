@@ -6,7 +6,8 @@ test ErrorMessage class
 from streamr.protocol.payload import ErrorPayload
 import json
 
-def test_ErrorPayload():
+
+def test_error_payload():
 
     msg = {'error': 'foo'}
 

@@ -8,7 +8,7 @@ from streamr.protocol.request import Request, SubscribeRequest
 import json
 
 
-def test_Request():
+def test_request():
     msg = {
         'type': 'unsubscribe',
         'stream': 'stream_id',
@@ -17,8 +17,8 @@ def test_Request():
     }
 
     serialized = Request(msg.get('type', None), msg.get('stream', None),
-                        msg.get('authKey', None),
-                        msg.get('sessionToken', None)).serialize()
+                         msg.get('authKey', None),
+                         msg.get('sessionToken', None)).serialize()
     assert isinstance(serialized, str)
     dic = json.loads(serialized)
     assert dic == msg

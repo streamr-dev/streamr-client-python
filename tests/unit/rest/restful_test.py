@@ -9,14 +9,13 @@ from streamr.rest.stream import creating, getting_by_id, getting_by_name
 import random
 
 
-
 def test_rest():
 
     api = '27ogvnHOQhGFQGETwjf1dAWFd2wXHbTlKCj_uEUTESXw'
     session_token = get_session_token_by_api_key(api)
     assert isinstance(session_token, str)
 
-    name = ''.join(random.sample('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567890',20))
+    name = ''.join(random.sample('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567890', 20))
 
     create_result = creating(name, 'this is for testing ', session_token)
     assert isinstance(create_result, dict)

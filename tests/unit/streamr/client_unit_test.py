@@ -1,21 +1,20 @@
 """
 this module provide integration test for client
 """
-import logging
 from collections import deque
 import json
 
-from streamr.client.connection import Connection
-from streamr.client.subscription import Subscription
+
 from streamr.client.event import Event
 from streamr.client.client import Client
 from streamr.util.option import Option
+from streamr.util.constant import EventConstant
 from streamr.protocol.response import Response
 from streamr.protocol.request import SubscribeRequest, UnsubscribeRequest
 
 
-
 api_key_test = '27ogvnHOQhGFQGETwjf1dAWFd2wXHbTlKCj_uEUTESXw'
+
 
 class EventMock(Event):
     """
@@ -25,16 +24,16 @@ class EventMock(Event):
     def __init__(self):
         super().__init__()
         self.expectedMessagesToSend = deque([])
-        self.state = Connection.State.DISCONNECTED
+        self.state = EventConstant.DISCONNECTED
 
         def connection_func():
             """
             connect function
             :return:
             """
-            self.state = Connection.State.CONNECTING
-            self.state = Connection.State.CONNECTED
-            self.emit('connected')
+            self.state = EventConstant.CONNECTING
+            self.state = EventConstant.CONNECTED
+            self.emit(EventConstant.CONNECTED)
 
         self.connect = connection_func
 
@@ -43,9 +42,9 @@ class EventMock(Event):
             disconnect func
             :return:
             """
-            self.state = Connection.State.DISCONNECTING
-            self.state = Connection.State.DISCONNECTED
-            self.emit('disconnected')
+            self.state = EventConstant.DISCONNECTING
+            self.state = EventConstant.DISCONNECTED
+            self.emit(EventConstant.DISCONNECTED)
 
         self.disconnect = disconnect_func
 
@@ -152,7 +151,7 @@ def test_subscribe_and_unsubscribe():
     conn.check()
     assert len(cli.sub_by_sub_id) == 1
 
-    assert subscrip.get_state() == Subscription.State.SUBSCRIBING
+    assert subscrip.get_state() == EventConstant.SUBSCRIBING
 
     sub_response = Response.deserialize(json.dumps([0, 2, None, {
         'stream': 'stream1',
@@ -160,7 +159,7 @@ def test_subscribe_and_unsubscribe():
     }]))
 
     conn.emit('SubscribeResponse', sub_response)
-    assert subscrip.get_state() == Subscription.State.SUBSCRIBED
+    assert subscrip.get_state() == EventConstant.SUBSCRIBED
 
     conn.expect(UnsubscribeRequest('stream1', api_key=cli.option.api_key, session_token=cli.session_token))
     
@@ -169,7 +168,7 @@ def test_subscribe_and_unsubscribe():
     conn.check()
     assert len(cli.sub_by_sub_id) == 1
 
-    assert subscrip.get_state() == Subscription.State.UNSUBSCRIBING
+    assert subscrip.get_state() == EventConstant.UNSUBSCRIBING
 
     unsub_response = Response.deserialize(json.dumps([0, 3, None, {
         'stream': 'stream1',
@@ -177,8 +176,7 @@ def test_subscribe_and_unsubscribe():
     }]))
     conn.emit('UnsubscribeResponse', unsub_response)
 
-    assert subscrip.get_state() == Subscription.State.UNSUBSCRIBED
+    assert subscrip.get_state() == EventConstant.UNSUBSCRIBED
     assert len(cli.sub_by_sub_id) == 0
 
     cli.disconnect()
-

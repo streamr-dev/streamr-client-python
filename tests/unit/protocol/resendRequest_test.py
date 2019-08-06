@@ -7,7 +7,8 @@ from streamr.protocol.request import ResendRequest
 from streamr.util.option import Option
 import json
 
-def test_ResendRequest():
+
+def test_resend_request():
     msg = {
         'sessionToken': 'my_sessionToken',
         'authKey': 'authKey',
@@ -38,7 +39,7 @@ def test_ResendRequest():
         'authKey': 'authKey'
     }
 
-    serialized = ResendRequest('id', 0, 'subId', Option(resend_all=True),'authKey','my_sessionToken').serialize()
+    serialized = ResendRequest('id', 0, 'subId', Option(resend_all=True), 'authKey', 'my_sessionToken').serialize()
     assert(isinstance(serialized, str))
     
     dic = json.loads(serialized)

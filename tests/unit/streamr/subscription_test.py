@@ -8,6 +8,7 @@ from streamr.protocol.payload import StreamMessage
 import time
 
 from streamr.util.option import Option
+from streamr.util.constant import EventConstant
 from streamr.protocol.errors.error import InvalidJsonError
 
 
@@ -413,8 +414,8 @@ def test_update_state():
 
     sub = Subscription(stream_id, stream_partition,
                        'api_key', lambda: print('done'))
-    sub.set_state(Subscription.State.SUBSCRIBED)
-    assert sub.get_state() == Subscription.State.SUBSCRIBED
+    sub.set_state(EventConstant.SUBSCRIBED)
+    assert sub.get_state() == EventConstant.SUBSCRIBED
 
 
 def test_emit_event():
@@ -426,9 +427,9 @@ def test_emit_event():
     def test():
         nonlocal count
         count += 1
-    sub.on(Subscription.State.SUBSCRIBED, test)
+    sub.on(EventConstant.SUBSCRIBED, test)
 
-    sub.set_state(Subscription.State.SUBSCRIBED)
+    sub.set_state(EventConstant.SUBSCRIBED)
 
     assert count == 1
 
@@ -449,7 +450,7 @@ def test_event_handling_resent():
     sub.handle_message(msg)
     assert count == 0
 
-    sub.emit('resent')
+    sub.emit(EventConstant.RESENT)
     assert count == 1
 
 
@@ -467,7 +468,7 @@ def test_event_handling_no_resent():
     sub.set_resending(True)
     sub.handle_message(msg)
     assert count == 0
-    sub.emit('no_resend')
+    sub.emit(EventConstant.NO_RESEND)
     assert count == 1
 
 

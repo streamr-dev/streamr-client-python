@@ -6,6 +6,7 @@ import logging
 
 from streamr.client.event import Event
 from streamr.util.option import Option
+from streamr.util.constant import EventConstant
 from streamr.protocol.errors.error import InvalidJsonError
 
 __all__ = ['Subscription']
@@ -30,15 +31,6 @@ class Subscription(Event):
     subscription class
     """
 
-    class State:
-        """
-        state of subscription
-        """
-        SUBSCRIBING = 'SUBSCRIBING'
-        SUBSCRIBED = 'SUBSCRIBED'
-        UNSUBSCRIBING = 'UNSUBSCRIBING'
-        UNSUBSCRIBED = 'UNSUBSCRIBED'
-
     def __init__(self, stream_id=None, stream_partition=0, api_key=None, callback=None, option=None):
         super().__init__()
 
@@ -59,7 +51,7 @@ class Subscription(Event):
         else:
             self.option = Option()
         self.queue = []
-        self.state = Subscription.State.UNSUBSCRIBED
+        self.state = EventConstant.UNSUBSCRIBED
         self.resending = False
         self.last_received_offset = None
 
@@ -79,7 +71,7 @@ class Subscription(Event):
             """
             self.set_resending(False)
 
-        self.on('unsubscribed', unsubscribed)
+        self.on(EventConstant.UNSUBSCRIBED, unsubscribed)
 
         def no_resend(response=None):
             """
@@ -91,7 +83,7 @@ class Subscription(Event):
             self.set_resending(False)
             self.check_queue()
 
-        self.on('no_resend', no_resend)
+        self.on(EventConstant.NO_RESEND, no_resend)
 
         def resent(response=None):
             """
@@ -103,7 +95,7 @@ class Subscription(Event):
             self.set_resending(False)
             self.check_queue()
 
-        self.on('resent', resent)
+        self.on(EventConstant.RESENT, resent)
 
         def connected():
             """
@@ -112,17 +104,17 @@ class Subscription(Event):
             """
             pass
 
-        self.on('connected', connected)
+        self.on(EventConstant.CONNECTED, connected)
 
         def disconnected():
             """
             callback function of disconnected event
             :return:
             """
-            self.set_state(Subscription.State.UNSUBSCRIBED)
+            self.set_state(EventConstant.UNSUBSCRIBED)
             self.set_resending(False)
 
-        self.on('disconnected', disconnected)
+        self.on(EventConstant.DISCONNECTED, disconnected)
 
     def check_for_gap(self, previous_offset):
         """
@@ -155,7 +147,7 @@ class Subscription(Event):
             to_index = msg.previous_offset
             logger.debug('Gap detected, requesting resend for stream %s from %d to %d' % (
                 self.stream_id, from_index, to_index))
-            self.emit('gap', from_index, to_index)
+            self.emit(EventConstant.GAP, from_index, to_index)
         elif self.last_received_offset is not None and msg.offset <= self.last_received_offset:
             logger.debug('Sub %s already received message: %s, last_received_offset :%s. Ignoring message.' % (
                 self.sub_id, msg.offset, self.last_received_offset))
@@ -163,7 +155,7 @@ class Subscription(Event):
             self.last_received_offset = msg.offset
             self.callback(msg.get_parsed_content(), msg)
             if msg.is_bye_message():
-                self.emit('done')
+                self.emit(EventConstant.DONE)
 
     def check_queue(self):
         """
@@ -254,4 +246,4 @@ class Subscription(Event):
         if isinstance(err, InvalidJsonError) and not self.check_for_gap(err.stream_message.previous_offset):
             self.last_received_offset = err.stream_message.offset
 
-        self.emit('error', err)
+        self.emit(EventConstant.ERROR, err)

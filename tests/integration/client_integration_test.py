@@ -3,7 +3,6 @@ test client
 """
 
 
-import logging
 import time
 import random
 
@@ -27,7 +26,7 @@ def test_client():
 
     assert session_token is not None
 
-    stream_name = ''.join(random.sample('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567890',20))
+    stream_name = ''.join(random.sample('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567890', 20))
 
     stream = cli.get_or_create_stream(stream_name)
     assert(isinstance(stream, list))
@@ -51,10 +50,16 @@ def test_client():
         pass
     
     def get_random_name():
-        return ''.join(random.sample('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',5))
+        """
+        generate random variable
+        :return: string
+        """
+        return ''.join(random.sample('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 5))
     
-    msg = [{"name": get_random_name(), "age": random.randrange(0,100)}, {"name": get_random_name(), "age": random.randrange(0,100)},
-           {"name": get_random_name(), "age": random.randrange(0,100)}, {"name": get_random_name(), "age": random.randrange(0,100)}]
+    msg = [{"name": get_random_name(), "age": random.randrange(0, 100)},
+           {"name": get_random_name(), "age": random.randrange(0, 100)},
+           {"name": get_random_name(), "age": random.randrange(0, 100)},
+           {"name": get_random_name(), "age": random.randrange(0, 100)}]
 
     def callback(parsed_msg, msg_object):
         """

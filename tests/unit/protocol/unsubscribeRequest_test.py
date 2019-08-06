@@ -6,7 +6,8 @@ test unsubscribeRequest
 from streamr.protocol.request import UnsubscribeRequest
 import json
 
-def test_UnsubscribeRequest():
+
+def test_unsubscribe_request():
     msg = {
         'type': 'unsubscribe',
         'stream': 'sub_id',
@@ -30,7 +31,6 @@ def test_UnsubscribeRequest():
 
     serialized = UnsubscribeRequest('sub_id', 0, 'authKey', 'session_token').serialize()
     dic = json.loads(serialized)
-
 
     assert isinstance(serialized, str)
 

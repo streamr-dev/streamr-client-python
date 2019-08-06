@@ -6,7 +6,8 @@ test the resendResponse class
 from streamr.protocol.payload import ResendResponsePayload
 import json
 
-def test_ResendResponsePayload():
+
+def test_resend_response_payload():
     msg = {
         'stream': 'sub_id',
         'partition': 0,
@@ -18,13 +19,11 @@ def test_ResendResponsePayload():
     assert payload.stream_partition == msg.get('partition', None)
     assert payload.sub_id == msg.get('sub', None)
 
-
     msg = {
         'stream': 'sub_id',
         'partition': 0,
         'sub': 0,
     }
-
 
     serialized = ResendResponsePayload('sub_id', 0, 0).serialize()
 
