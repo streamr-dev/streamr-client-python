@@ -51,6 +51,7 @@ class Client(Event):
         self.__auto_update_session_token()
 
         if self.session_token is None:
+            self._close_session_thread()
             raise ConnectionErr('Get session token failed')
 
         self.connection = connection if connection is not None else Connection(self.option)
@@ -383,6 +384,15 @@ class Client(Event):
         """
         self.connection.disconnect()
 
+    def _close_session_thread(self):
+        """
+        shutdown session_thread
+        :return: None
+        """
+        self.session_thread_lock.acquire()
+        self.session_thread.cancel()
+        self.session_thread_lock.release()
+
     def disconnect(self):
         """
         disconnect from server
@@ -391,9 +401,7 @@ class Client(Event):
         self.subs_by_stream_id = defaultdict(list)
         self.sub_by_sub_id = {}
         self.connection.disconnect()
-        self.session_thread_lock.acquire()
-        self.session_thread.cancel()
-        self.session_thread_lock.release()
+        self._close_session_thread()
 
     def __check_auto_disconnect(self):
         if self.option.auto_disconnect is True and len(self.subs_by_stream_id.keys()) == 0:

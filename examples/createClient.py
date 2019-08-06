@@ -4,6 +4,7 @@ an example of create Client
 
 from streamr import Client, Option
 
+
 # To create a client object, you can use this function.
 
 my_option = Option.get_default_option()
@@ -18,6 +19,7 @@ my_option.auto_disconnect = False
 
 # Notes:
 # 1. You should replace 'your-api-key' with your own api key
-# 2. The client will autoconnect to server by default. 
+# 2. The client will autoconnect to server by default.
 
 my_client.disconnect()
+
