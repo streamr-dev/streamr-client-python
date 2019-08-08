@@ -19,11 +19,11 @@ This library is work-in-progress
 ### Tests
 You can test the integration functions using the following steps.
 
-`client_test.py`:  you can run this file to test.
+`client_test.py`:  you can run following commands to test.
 
 ```
 $ cd streamr-client-python
-$ python -m tests.integration.client_test
+$ pytest
 ```
 
 ### Usage
@@ -85,7 +85,7 @@ while(not client.is_connected()):
 #### Subscribing to stream
 ```
 def callback(msg,_):
-	print('message received . The Cotent is : %s'%(msg))
+	print('message received . The Content is : %s'%(msg))
 
 subscription = client.subscribe(stream_id, callback)
 ```
@@ -94,9 +94,11 @@ subscription = client.subscribe(stream_id, callback)
 #### publishing data to stream
 
 ```
+import time
 data = [{"name":'google',"age":19},{"name":"yahoo","age":11},{"name":"facebook","age":13},{"name":"twitter","age":1}]
 for d in data:
     client.publish(subscription, d)
+    time.sleep(0.01)
 ```
 
 #### disconnect from server
