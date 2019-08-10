@@ -96,6 +96,7 @@ subscription = client.subscribe(stream_id, callback)
 ```
 import time
 data = [{"name":'google',"age":19},{"name":"yahoo","age":11},{"name":"facebook","age":13},{"name":"twitter","age":1}]
+stream_id = 'your stream ID'
 for d in data:
     client.publish(subscription, d)
     time.sleep(0.01)

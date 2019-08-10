@@ -1,4 +1,4 @@
-requests
-setuptools
-six
-websocket_client
+requests>=2.20.0
+setuptools==38.4.0
+six==1.11.0
+websocket_client==0.54.0
