@@ -3,8 +3,8 @@ an example of create and get stream
 """
 
 
-from streamr.client.client import Client
-from streamr.util.option import Option
+from streamr import Client, Option
+
 # To create or get a stream you should create a client object at first
 my_option = Option.get_default_option()
 my_option.api_key = 'your-api-key'

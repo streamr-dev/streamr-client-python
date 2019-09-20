@@ -8,6 +8,7 @@ from streamr.protocol.payload import StreamMessage
 import time
 
 from streamr.util.option import Option
+from streamr.util.constant import EventConstant
 from streamr.protocol.errors.error import InvalidJsonError
 
 
@@ -413,8 +414,8 @@ def test_update_state():
 
     sub = Subscription(stream_id, stream_partition,
                        'api_key', lambda: print('done'))
-    sub.set_state(Subscription.State.SUBSCRIBED)
-    assert sub.get_state() == Subscription.State.SUBSCRIBED
+    sub.set_state(EventConstant.SUBSCRIBED)
+    assert sub.get_state() == EventConstant.SUBSCRIBED
 
 
 def test_emit_event():
@@ -426,9 +427,9 @@ def test_emit_event():
     def test():
         nonlocal count
         count += 1
-    sub.on(Subscription.State.SUBSCRIBED, test)
+    sub.on(EventConstant.SUBSCRIBED, test)
 
-    sub.set_state(Subscription.State.SUBSCRIBED)
+    sub.set_state(EventConstant.SUBSCRIBED)
 
     assert count == 1
 
@@ -449,7 +450,7 @@ def test_event_handling_resent():
     sub.handle_message(msg)
     assert count == 0
 
-    sub.emit('resent')
+    sub.emit(EventConstant.RESENT)
     assert count == 1
 
 
@@ -467,30 +468,7 @@ def test_event_handling_no_resent():
     sub.set_resending(True)
     sub.handle_message(msg)
     assert count == 0
-    sub.emit('no_resend')
+    sub.emit(EventConstant.NO_RESEND)
     assert count == 1
 
 
-if __name__ == '__main__':
-    test_bye()
-    test_duplicate_handling()
-    test_duplicate_handling_when_resending()
-    test_emit_event()
-    test_event_handling_no_resent()
-    test_event_handling_resent()
-    test_gap()
-    test_get_original_resend_option()
-    test_get_resend_option_after_received_data1()
-    test_get_resend_option_after_received_data2()
-    test_get_resend_option_after_received_data3()
-    test_get_resend_option_after_received_data4()
-    test_handle_error()
-    test_handle_message()
-    test_handle_messages()
-    test_handle_message_when_resending_and_is_resend_false()
-    test_handle_message_when_resending_and_is_resend_true()
-    test_invalid_json_error()
-    test_no_gap()
-    test_update_state()
-
-    print('subscription test passed')

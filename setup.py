@@ -2,17 +2,22 @@
 setup func
 """
 
+from setuptools import setup, find_packages
 
-from setuptools import setup
+
+import sys
+
+if sys.version_info < (3, 5):
+    sys.exit('Sorry, Python 3.5 or higher is required.')
+
+with open('requirements.txt') as f:
+    reqs = f.read()
 
 setup(
-    name='streamr', 
-    version='0.0.1',
-    packages=['streamr.client', 'streamr.client.util', 'streamr.client.errors',
-              'streamr.protocol', 'streamr.protocol.errors', 'streamr.protocol.util',
-              'streamr.rest', 'streamr.util'],
-    install_requires=['websocket-client == 0.54.0',
-                      'requests>=2.20.0',
-                      'six==1.11.0',
-                      'setuptools==38.4.0']
+    name='streamr',
+    version='0.0.2',
+    python_requires='>3.4',
+    packages=find_packages(),
+    package_dir={'streamr': 'streamr'},
+    install_requires=reqs.strip().split('\n'),
     )

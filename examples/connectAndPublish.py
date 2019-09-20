@@ -3,8 +3,7 @@ an example of connect and publish
 """
 
 
-from streamr.client.client import Client
-from streamr.util.option import Option
+from streamr import Client, Option
 import logging
 import time
 

@@ -3,22 +3,19 @@ test client
 """
 
 
-import logging
 import time
+import random
 
-from streamr.client.client import Client
-from streamr.util.option import Option
-from tests.config import get_api_key
+from streamr import Client, Option
 
 
 def test_client():
-    logging.basicConfig(level=logging.ERROR, filename='mylog.log',
-                        format='%(relativeCreated)6d %(threadName)s %(levelname)s :%(message)s')
-
+    api_key_test = '27ogvnHOQhGFQGETwjf1dAWFd2wXHbTlKCj_uEUTESXw'
+    
     option = Option.get_default_option()
     option.auto_connect = False
     option.auto_disconnect = False
-    option.api_key = get_api_key()
+    option.api_key = api_key_test
 
     cli = Client(option)
 
@@ -29,15 +26,17 @@ def test_client():
 
     assert session_token is not None
 
-    stream = cli.get_or_create_stream('stream-test')
+    stream_name = ''.join(random.sample('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567890', 20))
+
+    stream = cli.get_or_create_stream(stream_name)
     assert(isinstance(stream, list))
     for s in stream:
-        assert s['name'] == 'stream-test'
+        assert s['name'] == stream_name
 
-    stream_by_name = cli.get_stream_by_name('stream-test')
+    stream_by_name = cli.get_stream_by_name(stream_name)
     assert(isinstance(stream_by_name, list))
     for s in stream:
-        assert s['name'] == 'stream-test'
+        assert s['name'] == stream_name
 
     stream_id = stream[0]['id']
     stream_by_id = cli.get_stream_by_id(stream_id)
@@ -49,11 +48,18 @@ def test_client():
 
     while not cli.is_connected():
         pass
-
-    msg = [{"name": 'google', "age": 19}, {"name": "facebook", "age": 11},
-           {"name": "yahoo", "age": 13}, {"name": "twitter", "age": 1}]
-
-    counts = 0
+    
+    def get_random_name():
+        """
+        generate random variable
+        :return: string
+        """
+        return ''.join(random.sample('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 5))
+    
+    msg = [{"name": get_random_name(), "age": random.randrange(0, 100)},
+           {"name": get_random_name(), "age": random.randrange(0, 100)},
+           {"name": get_random_name(), "age": random.randrange(0, 100)},
+           {"name": get_random_name(), "age": random.randrange(0, 100)}]
 
     def callback(parsed_msg, msg_object):
         """
@@ -64,8 +70,6 @@ def test_client():
         """
         assert msg_object.stream_id == stream_id
         assert parsed_msg in msg
-        nonlocal counts
-        counts += 1
 
     subscription = cli.subscribe(stream_id, callback)
 
@@ -73,11 +77,5 @@ def test_client():
         cli.publish(subscription, m)
 
     time.sleep(30)
-    assert counts == 4
+
     cli.disconnect()
-
-    print('tests passed')
-
-
-if __name__ == "__main__":
-    test_client()

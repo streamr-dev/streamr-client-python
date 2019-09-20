@@ -9,22 +9,21 @@ This library is work-in-progress
 
 
 ### Installation
-This module is test on Python 3.6+
 
 1. download
 
 2. `cd streamr-client-python`
 
-3. `pip3 install .`
+3. `pip install .` 
 
 ### Tests
 You can test the integration functions using the following steps.
 
-`client_test.py`:  you can run this file to test.
+`client_test.py`:  you can run following commands to test.
 
 ```
 $ cd streamr-client-python
-$ python -m tests.integration.client_test
+$ pytest
 ```
 
 ### Usage
@@ -34,8 +33,7 @@ Here are some quick examples.
 #### Importing streamr-client-python module
 
 ```
-from streamr.client.client import Client
-from streamr.util.option import Option
+from streamr import Client, Option
 ```
 
 #### Creating a StreamrClient instance with given option
@@ -65,19 +63,15 @@ stream_id = stream[0]['id']
 
 ```
 stream = client.get_stream_by_name('stream-test')
-
-
 ```
 ```
 stream = client.get_stream_by_id(stream_id)
-
 ``` 
 
 #### checking the state of connection
 
 ```
 print(client.connection.state)
-
 ```
 
 #### connect to server
@@ -86,33 +80,30 @@ print(client.connection.state)
 client.connect()
 while(not client.is_connected()):
     pass
-	
 ```
 
 #### Subscribing to stream
 ```
 def callback(msg,_):
-	print('message received . The Cotent is : %s'%(msg))
-stream_id = 'your stream ID'
-subscription = client.subscribe(stream_id, callback)
+	print('message received . The Content is : %s'%(msg))
 
+subscription = client.subscribe(stream_id, callback)
 ```
 
 
 #### publishing data to stream
 
 ```
-
+import time
 data = [{"name":'google',"age":19},{"name":"yahoo","age":11},{"name":"facebook","age":13},{"name":"twitter","age":1}]
 stream_id = 'your stream ID'
 for d in data:
-    client.publish(stream_id, d)
-
+    client.publish(subscription, d)
+    time.sleep(0.01)
 ```
 
 #### disconnect from server
 
 ```
 client.disconnect()
-
 ```
