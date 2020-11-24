@@ -1,6 +1,8 @@
 # This library has been deprecated. 
 
-## Authenticating with an API key has been deprecated. Support for email/password authentication will be dropped in the future with authentication by cryptographic keys/wallets will be the only supported method of authentication.
+## Authenticating with an API key has been deprecated. 
+
+## Support for email/password authentication will be dropped in the future and cryptographic keys/wallets will be the only supported method.
 
 ## Streamr-Client-Python
 
